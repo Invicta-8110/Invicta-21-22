@@ -1,6 +1,4 @@
 # TeamCode
-## Module
-This Module contains everything you need
-## The Code
-DO not touch any files in the main branch
-DO NOT touch any files with 'Zach' in the name
+Welcome to the folder featuring all our code.
+## Rule of Zach
+Do not touch any files with Zach in the name unless you are Zach.
