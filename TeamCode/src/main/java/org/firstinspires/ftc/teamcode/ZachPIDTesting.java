@@ -60,7 +60,7 @@ public class ZachPIDTesting extends LinearOpMode {
         int []newWheelTarget = new int[4];
 
         // Ensure that the opmode is still active
-        if (opModeIsActive()) {
+        while (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
             for (int i = 0; i < 4; i++) {
@@ -87,7 +87,7 @@ public class ZachPIDTesting extends LinearOpMode {
 
             error[0] = tolerance + 1;
 
-            while ((Math.abs(error[0]) > tolerance) && opModeIsActive()) { // TODO: replace error[0] with avgError
+            while ((Math.abs(error[0]) > tolerance)) { // TODO: replace error[0] with avgError
 
                 telemetry.addData("Path1",  "Running to %7d :%7d :%7d :%7d", newWheelTarget[0], newWheelTarget[1]);
                 telemetry.addData("Path2",  "Running at %7d :%7d :%7d :%7d", wheels[0].getCurrentPosition(), wheels[1].getCurrentPosition());
@@ -157,7 +157,7 @@ public class ZachPIDTesting extends LinearOpMode {
         int []newWheelTarget = new int[4];
 
         // Ensure that the opmode is still active
-        if (opModeIsActive()) {
+        if (opModeIsActive()) { //if statewment, change
 
             // Determine new target position, and pass to motor controller
             for (int i = 0; i < 4; i++) {
@@ -339,7 +339,7 @@ public class ZachPIDTesting extends LinearOpMode {
     public void encoderCarouselSpinner(double speed, double spinnerMM, double timeOutS){
         int newCarouselSpinnerTarget;
 
-        if (opModeIsActive()) {
+        if (opModeIsActive()) { //remove if statement
             newCarouselSpinnerTarget = TIseBot.carouselSpinner.getCurrentPosition() + (int)(spinnerMM * COUNTS_PER_CM);
 
             TIseBot.carouselSpinner.setTargetPosition(newCarouselSpinnerTarget);
