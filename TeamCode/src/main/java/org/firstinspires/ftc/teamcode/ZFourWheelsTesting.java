@@ -152,7 +152,7 @@ public class ZFourWheelsTesting extends LinearOpMode {
                 telemetry.addData("Path1", "Running to %7d :%7d :%7d, :%7d", newLeftTarget, newRightTarget);
                 telemetry.addData("Path2", "Running at %7d :%7d",
                                             robot.frontLeft.getCurrentPosition());
-                                            robot.frontRight.getCurrentPosition());
+                                            robot.frontRight.getCurrentPosition();
                 telemetry.update();
             }
 
