@@ -1,19 +1,19 @@
 package org.firstinspires.ftc.teamcode;
+//hi
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Four Motors",group="Zach")
-@Disabled
+@Autonomous(name="Four Motors",group="FreightFrenzy")
+
 public class ZFourWheelsTesting extends LinearOpMode {
 
     private ElapsedTime     runtime = new ElapsedTime();
 
-    DcMotor[] wheels = new DcMotor[4];
+    //DcMotor[] wheels = new DcMotor[4];
     FourWheel robot = new FourWheel();
 
     static final double     COUNTS_PER_MOTOR_REV    = 537.7 ;    // eg: TETRIX Motor Encoder
@@ -21,8 +21,8 @@ public class ZFourWheelsTesting extends LinearOpMode {
     static final double     WHEEL_DIAMETER_CM   = 9.6 ;     // For figuring circumference
     static final double     COUNTS_PER_CM         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                     (WHEEL_DIAMETER_CM * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
+    static final double     DRIVE_SPEED             = 0.3;
+    static final double     TURN_SPEED              = 0.2;
 
     @Override
     public void runOpMode() {
@@ -67,7 +67,7 @@ public class ZFourWheelsTesting extends LinearOpMode {
         */
 
         //message for successful encoder reset
-         telemetry.addData("Path0", "Starting at %7d : %7d",
+         telemetry.addData("Path0", "Starting at %7d :%7d :%7d :%7d",
                             robot.frontLeft.getCurrentPosition(),
                             robot.backLeft.getCurrentPosition(),
                             robot.frontRight.getCurrentPosition(),
@@ -76,9 +76,10 @@ public class ZFourWheelsTesting extends LinearOpMode {
          waitForStart(); //wait for press play (start)
 
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  48.0,  48.0,48.0);  // S1: Forward 48 Inches with 5 Sec timeout
-        encoderDrive(TURN_SPEED,   -12.0, -12.0, 12.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        encoderDrive(DRIVE_SPEED, 24.0, 24, 24);  // S3: Reverse 24 Inches with 4 Sec timeout
+        encoderDrive(DRIVE_SPEED,  48.0,  48.0,10.0);  // S1: Forward 48 Inches with 5 Sec timeout
+        encoderDrive(TURN_SPEED,   30.48, -12.0*2.54, 10.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
+        encoderDrive(DRIVE_SPEED, -48.0, -48, 10.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        sleep(1000);
 
         telemetry.addData("Path","Complete");
         telemetry.update();
@@ -107,16 +108,22 @@ public class ZFourWheelsTesting extends LinearOpMode {
              */
             newLeftTarget = robot.frontLeft.getCurrentPosition() + (int)(leftCM * COUNTS_PER_CM);
             newRightTarget = robot.frontRight.getCurrentPosition() + (int)(rightCM * COUNTS_PER_CM);
+            robot.frontLeft.setTargetPosition(newLeftTarget);
+            robot.backLeft.setTargetPosition(robot.backLeft.getCurrentPosition() + (int)(leftCM * COUNTS_PER_CM));
+            robot.frontRight.setTargetPosition(newRightTarget);
+            robot.backRight.setTargetPosition(robot.backRight.getCurrentPosition() + (int) (rightCM * COUNTS_PER_CM));
 
             //turn on RUN_TO_POSITION
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             //reset timeout time + start motion
             runtime.reset();
             robot.frontLeft.setPower(Math.abs(speed));
-            robot.frontRight.setPower(Math.abs(speed));
             robot.backLeft.setPower(Math.abs(speed));
+            robot.frontRight.setPower(Math.abs(speed));
             robot.backRight.setPower(Math.abs(speed));
 
             /*
@@ -138,7 +145,7 @@ public class ZFourWheelsTesting extends LinearOpMode {
             while (opModeIsActive() &&
                     //(wheels[0].isBusy() && wheels[1].isBusy() && wheels[2].isBusy() && wheels[3].isBusy())
                     (runtime.seconds() < timeOutS) &&
-                    (robot.frontLeft.isBusy() && robot.frontRight.isBusy()))
+                    (robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backLeft.isBusy() && robot.backRight.isBusy()))
             {
 
                 // Display it for the driver.
@@ -149,10 +156,12 @@ public class ZFourWheelsTesting extends LinearOpMode {
                     telemetry.update();
                 }
                  */
-                telemetry.addData("Path1", "Running to %7d :%7d :%7d, :%7d", newLeftTarget, newRightTarget);
-                telemetry.addData("Path2", "Running at %7d :%7d",
-                                            robot.frontLeft.getCurrentPosition());
-                                            robot.frontRight.getCurrentPosition();
+                telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                                            robot.frontLeft.getCurrentPosition(),
+                                            robot.backLeft.getCurrentPosition(),
+                                            robot.frontRight.getCurrentPosition(),
+                                            robot.backRight.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -164,8 +173,8 @@ public class ZFourWheelsTesting extends LinearOpMode {
             */
 
             //stop all motion
-            robot.backLeft.setPower(0);
             robot.frontLeft.setPower(0);
+            robot.backLeft.setPower(0);
             robot.frontRight.setPower(0);
             robot.backRight.setPower(0);
 
