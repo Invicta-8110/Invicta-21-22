@@ -13,13 +13,22 @@ class FreightFrenzyHardware {
 
     DcMotor right;
     DcMotor left;
+    DcMotor pivot;
+    DcMotor arm;
+    CRServo claw;
 
     public void init(HardwareMap hardwareMap) {
 
         right = hardwareMap.get(DcMotor.class, "right");
         left = hardwareMap.get(DcMotor.class, "left");
+        pivot = hardwareMap.get(DcMotor.class, "pivot");
+        arm = hardwareMap.get(DcMotor.class, "arm");
+        claw = hardwareMap.get(CRServo.class, "claw");
+
 
         right.setDirection(DcMotor.Direction.REVERSE);
+        left.setDirection(DcMotor.Direction.FORWARD);
+        left.setDirection(DcMotor.Direction.FORWARD);
         left.setDirection(DcMotor.Direction.FORWARD);
 
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
