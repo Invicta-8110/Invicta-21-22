@@ -13,7 +13,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
     public void runOpMode() {
 
         DcMotor left = hardwareMap.dcMotor.get("left");
-        DcMotor right = hardwareMap.dcMotor.get("right")\;
+        DcMotor right = hardwareMap.dcMotor.get("right");
 
         left.setDirection(DcMotor.Direction.REVERSE);
         right.setDirection(DcMotor.Direction.FORWARD);
@@ -34,7 +34,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             double rightPower = scaleInput(drive - turn);
 
 
-            if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
+            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
                 left.setPower(0);
                 right.setPower(0);
             } else {
