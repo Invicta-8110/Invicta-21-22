@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Zach Tests PID",group="Zach Tests")
@@ -26,10 +27,11 @@ public class ZachPIDTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        wheels[0] = hardwareMap.dcMotor.get("Left");
-        wheels[1] = hardwareMap.dcMotor.get("Right");
+        wheels[0] = hardwareMap.dcMotor.get("left");
+        wheels[1] = hardwareMap.dcMotor.get("right");
 
-        wheels[0].setDirection(DcMotor.Direction.REVERSE);
+        wheels[0].setDirection(DcMotor.Direction.FORWARD);
+        wheels[1].setDirection(DcMotor.Direction.REVERSE);
 
         for (DcMotor wheel : wheels){
             wheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -37,7 +39,7 @@ public class ZachPIDTesting extends LinearOpMode {
             wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d", wheels[0].getCurrentPosition(),wheels[1].getCurrentPosition());
+        telemetry.addData("Path0",  "Starting at %7d :%7d", wheels[0].getCurrentPosition(),wheels[1].getCurrentPosition());
 
         telemetry.update();
 
@@ -57,14 +59,14 @@ public class ZachPIDTesting extends LinearOpMode {
 
     public void PIDDrive(double distanceCM, double tolerance) { // TODO: Adjust Tolerance
 
-        int []newWheelTarget = new int[4];
+        int []newWheelTarget = new int[2];
 
         // Ensure that the opmode is still active
         while (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            for (int i = 0; i < 4; i++) {
-                newWheelTarget[i] = wheels[0].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM); // TODO: Get avg position
+            for (int i = 0; i < 2; i++) {
+                newWheelTarget[i] = wheels[i].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM); // TODO: Get avg position
             }
 
             double[] P = new double[2];
@@ -89,8 +91,8 @@ public class ZachPIDTesting extends LinearOpMode {
 
             while ((Math.abs(error[0]) > tolerance)) { // TODO: replace error[0] with avgError
 
-                telemetry.addData("Path1",  "Running to %7d :%7d :%7d :%7d", newWheelTarget[0], newWheelTarget[1]);
-                telemetry.addData("Path2",  "Running at %7d :%7d :%7d :%7d", wheels[0].getCurrentPosition(), wheels[1].getCurrentPosition());
+                telemetry.addData("Path1",  "Running to %7d :%7d", newWheelTarget[0], newWheelTarget[1]);
+                telemetry.addData("Path2",  "Running at %7d :%7d", wheels[0].getCurrentPosition(), wheels[1].getCurrentPosition());
 
                 telemetry.addData("DistanceCM: ", (int)(distanceCM * COUNTS_PER_CM));
 

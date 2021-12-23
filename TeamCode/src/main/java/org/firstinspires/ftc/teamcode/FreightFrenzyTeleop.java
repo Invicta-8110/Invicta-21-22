@@ -24,7 +24,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             //left joystick for driving
 
-            double drive = -gamepad1.left_stick_y;//cl
+            double drive = gamepad1.left_stick_y;//cl
             double turn = gamepad1.left_stick_x;//cl
 
             double speed = scaleInput(drive);

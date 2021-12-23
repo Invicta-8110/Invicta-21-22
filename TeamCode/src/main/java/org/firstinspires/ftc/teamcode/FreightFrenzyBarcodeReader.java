@@ -20,33 +20,33 @@ public class FreightFrenzyBarcodeReader extends LinearOpMode {
     OpenCvCamera camera;
     //RingDetectionPipeline pipeline;
 
-
-
     @Override
     public void runOpMode() {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        WebcamName webcam = hardwareMap.get(WebcamName.class, "NAME_OF_CAMERA_IN_CONFIG_FILE");
-        camera = OpenCvCameraFactory.getInstance().createWebcam(webcam, cameraMonitorViewId);
+        WebcamName webcam = hardwareMap.get(WebcamName.class, "webcam");
 
-        camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcam, cameraMonitorViewId);
+
+        //camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(640, 480, OpenCvCameraRotation.UPSIDE_DOWN);
+                camera.startStreaming(640, 480);
             }
 
             @Override
             public void onError(int errorCode) {
                 telemetry.addLine("Error Opening Camera");
                 telemetry.addData("ErrorCode: ", errorCode);
+                telemetry.update();
             }
 
-
-
         });
+
+        waitForStart();
 
 
     }
