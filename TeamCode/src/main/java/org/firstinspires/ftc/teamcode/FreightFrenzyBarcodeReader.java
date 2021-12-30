@@ -23,6 +23,7 @@ public class FreightFrenzyBarcodeReader extends LinearOpMode {
     WebcamName webcam;
     OpenCvWebcam camera;
     ColorPipeline pipeline;
+    ColorPipeline.Barcode number;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -52,87 +53,137 @@ public class FreightFrenzyBarcodeReader extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("hi","hi");
+
+            number = pipeline.getBarcode();
+
+            telemetry.addData("Region 1: ", pipeline.getAvg1());
+            telemetry.addData("Region 2: ", pipeline.getAvg2());
+
+            if (number == ColorPipeline.Barcode.ONE) { //avg1 is greater
+                telemetry.addData("Move To: ", number);
+            }
+            else if (number == ColorPipeline.Barcode.TWO) { //avg2 is greater
+                telemetry.addData("Move To: ", number);
+            }
+            else { //if third barcode has element
+                telemetry.addData("Move To: ", number);
+            }
+
         }
     }
+}
 
-    class ColorPipeline extends OpenCvPipeline {
+class ColorPipeline extends OpenCvPipeline {
 
-        private Point SIDE_BOTTOM_LEFT = new Point(0, 211.2);
-        private Point SIDE_TOP_RIGHT = new Point(114.56,249.6);
-        private Point REGION1_BOTTOM_LEFT = new Point(205.28,211.2);
-        private Point REGION1_TOP_RIGHT = new Point(320,249.6);
-        private Point REGION2_BOTTOM_LEFT = new Point(588.8, 211.2);
-        private Point REGION2_TOP_RIGHT = new Point(640,249.6);
+    //private Point SIDE_BOTTOM_LEFT = new Point(0, 211.2);
+    //private Point SIDE_TOP_RIGHT = new Point(114.56,249.6);
+    private static final Point REGION1_BOTTOM_LEFT = new Point(205.28,211.2);
+    private static final Point REGION1_TOP_RIGHT = new Point(320,249.6);
+    private static final Point REGION2_BOTTOM_LEFT = new Point(588.8, 211.2);
+    private static final Point REGION2_TOP_RIGHT = new Point(640,249.6);
 
-        final Scalar RED = new Scalar(255, 0, 0);
-        final Scalar GREEN = new Scalar(0, 255, 0);
+    private static final Scalar RED = new Scalar(255, 0, 0);
+    private static final Scalar GREEN = new Scalar(0, 255, 0);
 
-        Mat Side, Region1, Region2;
-        Mat Color = new Mat();
-        Mat YCrCb = new Mat();
-        int avgSide, avg1, avg2;
+    //Mat Side;
+    Mat Region1, Region2;
+    Mat Color = new Mat();
+    Mat YCrCb = new Mat();
+    //int avgSide;
 
-        //convert mat into color depending on scale
-        void inputToCb(Mat input) {
-            Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCrCb, Color, 2);
-        }
+    private int avg1, avg2;
+
+    public enum Barcode {
+        ONE, TWO, THREE
+    }
+
+    private volatile Barcode number = Barcode.THREE;
+
+    //convert mat into color depending on scale
+    public void inputToCb(Mat input) {
+        Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
+        Core.extractChannel(YCrCb, Color, 2);
+    }
 
 
-        @Override
-        public void init(Mat firstFrame) {
-            inputToCb(firstFrame);
+    @Override
+    public void init(Mat firstFrame) {
+        inputToCb(firstFrame);
 
-            Side = Color.submat(new Rect(SIDE_BOTTOM_LEFT,SIDE_TOP_RIGHT));
-            Region1 = Color.submat(new Rect(REGION1_BOTTOM_LEFT,REGION1_TOP_RIGHT));
-            Region2 = Color.submat(new Rect(REGION2_BOTTOM_LEFT,REGION2_TOP_RIGHT));
+        //Side = Color.submat(new Rect(SIDE_BOTTOM_LEFT,SIDE_TOP_RIGHT));
+        Region1 = Color.submat(new Rect(REGION1_BOTTOM_LEFT,REGION1_TOP_RIGHT));
+        Region2 = Color.submat(new Rect(REGION2_BOTTOM_LEFT,REGION2_TOP_RIGHT));
 
-        }
+    }
 
-        @Override
-        public Mat processFrame(Mat input) {
+    @Override
+    public Mat processFrame(Mat input) {
 
-            inputToCb(input);
+        inputToCb(input);
 
-            avgSide = (int) Core.mean(Side).val[0];
-            avg1 = (int) Core.mean(Region1).val[0];
-            avg2 = (int) Core.mean(Region2).val[0];
+        //avgSide = (int) Core.mean(Side).val[0];
+        avg1 = (int) Core.mean(Region1).val[0];
+        avg2 = (int) Core.mean(Region2).val[0];
 
-            //find max color value for both side + barcodes
-            //test color space for biggest contrast between
-            //grey + Red/blue (side)
-            //blue/red + shipping element color (barcode)
-            //need a range for the same color incase element is on third barcode (outside of cam view)
+        //find max color value for both side + barcodes
+        //test color space for biggest contrast between
+        //grey + Red/blue (side)
+        //blue/red + shipping element color (barcode)
+        //need a range for the same color incase element is on third barcode (outside of cam view)
 
-            Imgproc.rectangle(
+            /*Imgproc.rectangle(
                     input, // Buffer to draw on
                     SIDE_BOTTOM_LEFT, // First point which defines the rectangle
                     SIDE_TOP_RIGHT, // Second point which defines the rectangle
                     RED, // The color the rectangle is drawn in
                     2 // Thickness of the rectangle lines
-            );
+            );*/
 
+        Imgproc.rectangle(
+                input,
+                REGION1_BOTTOM_LEFT,
+                REGION1_TOP_RIGHT,
+                RED,
+                2
+        );
 
-            Imgproc.rectangle(
-                    input,
-                    REGION1_BOTTOM_LEFT,
-                    REGION1_TOP_RIGHT,
-                    RED,
-                    2
-            );
+        Imgproc.rectangle(
+                input,
+                REGION2_BOTTOM_LEFT,
+                REGION2_TOP_RIGHT,
+                RED,
+                2
+        );
 
+        return input;
+    }
 
-            Imgproc.rectangle(
-                    input,
-                    REGION2_BOTTOM_LEFT,
-                    REGION2_TOP_RIGHT,
-                    RED,
-                    2
-            );
-
-            return input;
+    //determine which barcode has the element
+    public void findBarcode() {
+        if (Math.abs(avg1 - avg2) <= 10) {
+            number = Barcode.THREE;
         }
+        else if (avg2 > avg1) {
+            number = Barcode.TWO;
+        }
+        else if (avg1 > avg2) {
+            number = Barcode.ONE;
+        }
+
+    }
+
+    //return barcode constant
+    public Barcode getBarcode() {
+        return number;
+    }
+
+    //get methods for average color values
+    public int getAvg1() {
+        return avg1;
+    }
+
+    public int getAvg2() {
+        return avg2;
     }
 
 }
