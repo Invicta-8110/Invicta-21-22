@@ -82,7 +82,6 @@ class ColorPipeline extends OpenCvPipeline {
     private static final Point REGION2_BOTTOM_LEFT = new Point(588.8, 211.2);
     private static final Point REGION2_TOP_RIGHT = new Point(640,249.6);
 
-    private static final Scalar RED = new Scalar(255, 0, 0);
     private static final Scalar GREEN = new Scalar(0, 255, 0);
 
     //Mat Side;
@@ -143,7 +142,7 @@ class ColorPipeline extends OpenCvPipeline {
                 input,
                 REGION1_BOTTOM_LEFT,
                 REGION1_TOP_RIGHT,
-                RED,
+                GREEN,
                 2
         );
 
@@ -151,7 +150,7 @@ class ColorPipeline extends OpenCvPipeline {
                 input,
                 REGION2_BOTTOM_LEFT,
                 REGION2_TOP_RIGHT,
-                RED,
+                GREEN,
                 2
         );
 
