@@ -14,7 +14,7 @@ public class FreightFrenzyBarcodeReader extends LinearOpMode {
     WebcamName webcam;
     OpenCvWebcam camera;
     ColorPipeline pipeline;
-
+//
     @Override
     public void runOpMode() throws InterruptedException{
         //camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
