@@ -61,13 +61,49 @@ public class FreightFrenzyAuton extends LinearOpMode {
     private ElapsedTime timer = new ElapsedTime();
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
+        // IMU parameters
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // From sample OpMode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        // Set up telemetry
+        //composeTelemetry();
+
+        // Initialize hardware
+        robot.init(hardwareMap);
+
+        // Reset encoders
+        //robot.resetEncoders();
+
+        // Displays on phone
+        telemetry.addData(">", "Calibrating Gyro");
+        telemetry.update();
+
+        // Make sure the gyro is calibrated before starting
+        while (!isStopRequested() && !imu.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+
+        }
+
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+
+        phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+
+
+        // Enable encoders
+        //robot.encoders();
+
 
     }
-
-
-
-
-
-
 }

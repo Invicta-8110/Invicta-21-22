@@ -4,58 +4,60 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "Actual Tele-Op", group = "Freight Frenzy")
-public class FreightFrenzyTeleop extends LinearOpMode {
+@TeleOp(name = "Kiwi Tele-Op", group = "Freight Frenzy")
+public class KiwiTeleOp extends LinearOpMode {
+
+    KiwiHardware robot = new KiwiHardware();
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
+        DcMotor top = hardwareMap.dcMotor.get("top");
         DcMotor left = hardwareMap.dcMotor.get("left");
         DcMotor right = hardwareMap.dcMotor.get("right");
 
-        left.setDirection(DcMotor.Direction.REVERSE);
+        top.setDirection(DcMotor.Direction.FORWARD);
+        left.setDirection(DcMotor.Direction.FORWARD);
         right.setDirection(DcMotor.Direction.FORWARD);
 
         waitForStart();
 
-        while (opModeIsActive()) {
+        while(opModeIsActive()) {
 
-            //left joystick for driving
-
-            double drive = gamepad1.left_stick_y;//cl
-            double turn = gamepad1.left_stick_x;//cl
+            double drive = -gamepad1.left_stick_y;//cl
+            double turn = -gamepad1.right_stick_x;//cl
+            double strafe = gamepad1.left_stick_x;
 
             double speed = scaleInput(drive);
 
-            double leftPower = scaleInput(drive + turn);
+            // negated turn + added strafe
 
-            double rightPower = scaleInput(drive - turn);
+            double topPower = turn + strafe;
+            double leftPower = turn - drive + strafe;
+            double rightPower = turn + drive - strafe;
 
-
-            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
+            if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
+                top.setPower(0);
                 left.setPower(0);
                 right.setPower(0);
             } else {
+                top.setPower(topPower);
                 left.setPower(leftPower);
                 right.setPower(rightPower);
             }
 
-      /*
-      IMPORTANT TELEMETRY FOR DEBUGGING
-       */
+            telemetry.addData("Top Power", "top (%.2f)", top.getPower());
             telemetry.addData("Right Power", "right (%.2f)", right.getPower());
             telemetry.addData("Left Power", "left (%.2f)", left.getPower());
             telemetry.update();
+
         }
+
     }
 
-    /*
-    This method scales the joystick input so for low joystick values, the
-    scaled value is less than linear. This is to make it easier to drive the
-    robot more precisely at slower speeds
-     */
     private double scaleInput(double dval){
 
         double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
@@ -82,5 +84,4 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         //return scaled value
         return dScale;
     }
-
 }

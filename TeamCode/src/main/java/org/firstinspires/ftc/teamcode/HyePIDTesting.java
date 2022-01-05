@@ -3,29 +3,34 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Zach Tests PID",group="Zach Tests")
+@Autonomous(name="Hye Tests PID",group="Zach Tests")
 public class HyePIDTesting extends LinearOpMode {
 
 
     private ElapsedTime runtime = new ElapsedTime();
 
     // Constants to find the amount of encoder ticks per CM
-    static final double COUNTS_PER_MOTOR_REV = 537.7;
-    static final double DRIVE_GEAR_REDUCTION = 1;
-    static final double WHEEL_DIAMETER_CM = 9.6;
+    static final double COUNTS_PER_MOTOR_REV = 537.6;
+    static final double DRIVE_GEAR_REDUCTION = 1.0;
+    static final double WHEEL_DIAMETER_CM = 11.5;
 
     // Finds the amount of encoder ticks per CM
     static final double COUNTS_PER_CM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_CM * 3.1415);
 
     DcMotor[] wheels = new DcMotor[2];
+    FreightFrenzyHardware robot = new FreightFrenzyHardware();
+
 
     @Override
     public void runOpMode() {
 
-        wheels[0] = hardwareMap.dcMotor.get("Left");
-        wheels[1] = hardwareMap.dcMotor.get("Right");
+        //robot.init(hardwareMap);
+
+        wheels[0] = hardwareMap.dcMotor.get("left");
+        wheels[1] = hardwareMap.dcMotor.get("right");
 
         wheels[0].setDirection(DcMotor.Direction.REVERSE);
 
@@ -35,14 +40,15 @@ public class HyePIDTesting extends LinearOpMode {
             wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d", wheels[0].getCurrentPosition(),wheels[1].getCurrentPosition());
+        telemetry.addData("Path0",  "Starting at %7d :%7d", wheels[0].getCurrentPosition(),wheels[1].getCurrentPosition());
 
         telemetry.update();
 
         waitForStart();
 
-        PIDDrive(120, 1);
+        PIDDrive(60, 2.5);
         sleep(100);
+
 
         //TODO: Work on the turning
         //PIDTurn(100, 1);
@@ -55,60 +61,71 @@ public class HyePIDTesting extends LinearOpMode {
 
     public void PIDDrive(double distanceCM, double tolerance) { // TODO: Adjust Tolerance
 
-        int []newWheelTarget = new int[4];
+        //int []newWheelTarget = new int[2];
 
         // Ensure that the opmode is still active
-        while (opModeIsActive()) {
+        if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            for (int i = 0; i < 4; i++) {
-                newWheelTarget[i] = wheels[0].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM); // TODO: Get avg position
-            }
+            //for (int i = 0; i < 2; i++) {
+            //    newWheelTarget[i] = wheels[i].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM); // TODO: Get avg position
+            //}
 
-            double[] P = new double[2];
+            //newWheelTarget[0] = wheels[0].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM);
+            //newWheelTarget[1] = wheels[1].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM);
+            telemetry.addData("inpid",  "inside first while");
+            telemetry.update();
+            double[] p = new double[2];
 
             double kp = 1;
             //TODO: do kd and ki
-            //double kd = 0.000075; // Constant of derivation
-            //double ki = 0.000006;
+            //double kd = 0;
+            //double ki = 0;
+            double kd = 0.000075; // Constant of derivation
+            double ki = 0.000006;
 
-            double dt = 20; //Delta time = 20 ms/cycle
-            double dtS = dt/1000;
+            //double dt = 20; //Delta time = 20 ms/cycle
+            //double dtS = dt/1000;
+            double[] derivative = new double[2];
+            double[] integral = new double[2];
 
             double[] error = new double[2];
             double[] previousError = new double[2];
             double[] power = new double[2];
 
-            double[] area = new double[2];
-            double[] previousArea = new double[2];
+            //double[] area = new double[2];
+            //double[] previousArea = new double[2];
 
+            error[0] = tolerance + 1; //set to greater than tolerance to enter loop below
 
-            error[0] = tolerance + 1;
+            while ((Math.abs(error[0]) > tolerance) && opModeIsActive()) { // TODO: replace error[0] with avgError
 
-            while ((Math.abs(error[0]) > tolerance)) { // TODO: replace error[0] with avgError
-
-                telemetry.addData("Path1",  "Running to %7d :%7d :%7d :%7d", newWheelTarget[0], newWheelTarget[1]);
-                telemetry.addData("Path2",  "Running at %7d :%7d :%7d :%7d", wheels[0].getCurrentPosition(), wheels[1].getCurrentPosition());
+               // telemetry.addData("Path1",  "Running to %7d :%7d", newWheelTarget[0], newWheelTarget[1]);
+                telemetry.addData("Path2",  "Running at %7d :%7d", wheels[0].getCurrentPosition(), wheels[1].getCurrentPosition());
 
                 telemetry.addData("DistanceCM: ", (int)(distanceCM * COUNTS_PER_CM));
 
                 telemetry.addData("power: ", power[0]);
 
-                telemetry.addData("Proportion:", P[0]);
+                telemetry.addData("Proportion:", p[0]);
                 //telemetry.addData("Derivative:", kd * ((error[0] - previousError[0]) / dtS));
                 //telemetry.addData("Integral:", ki * area[0]);
 
-                telemetry.addData("de(t)/dt", ((error[0] - previousError[0]) / dtS));
+                //telemetry.addData("de(t)/dt", ((error[0] - previousError[0]) / dtS));
 
                 telemetry.addData("error:", error[0]);
                 telemetry.addData("previous error:", previousError[0]);
 
+
                 //telemetry.addData("∫e(t)dt:", area[0]);
                 //telemetry.addData("previous ∫e(t)dt:", previousArea[0]);
 
-                telemetry.addData("dtS", dtS);
+                //telemetry.addData("dtS", dtS);
 
                 telemetry.update();
+
+                runtime.reset(); //reset timer
+                //sleep((long) 5000);
 
                 previousError[0] = error[0];
                 previousError[1] = error[1];
@@ -116,31 +133,32 @@ public class HyePIDTesting extends LinearOpMode {
                 error[0] = (int)(distanceCM * COUNTS_PER_CM) - wheels[0].getCurrentPosition();
                 error[1] = (int)(distanceCM * COUNTS_PER_CM) - wheels[1].getCurrentPosition();
 
-                P[0] = Math.abs(error[0])/(int)(distanceCM * COUNTS_PER_CM);
-                P[1] = Math.abs(error[1])/(int)(distanceCM * COUNTS_PER_CM);
+                p[0] = kp * Math.abs(error[0])/ (int)(distanceCM * COUNTS_PER_CM);
+                p[1] = kp * Math.abs(error[1])/ (int)(distanceCM * COUNTS_PER_CM);
 
-                previousArea[0] = area[0];
-                previousArea[1] = area[1];
+                //double time = runtime.time();
+                double time = 0.02; //seconds
+                //telemetry.addData("Time: ",time);
+                //telemetry.update();
 
-                area[0] = error[0] * dtS + previousArea[0];
-                area[1] = error[1] * dtS + previousArea[1];
+                integral[0] += ki * (error[0] * time);
+                integral[1] += ki * (error[1] * time);
 
+                derivative[0] = kd * ((error[0] - previousError[0]) / time);
+                derivative[1] = kd * ((error[1] - previousError[1]) / time);
 
-                power[0] = kp * P[0] * ((error[0] - previousError[0]) / dtS) + (area[0]);
-                power[1] = kp * P[1] * ((error[1] - previousError[1]) / dtS) + (area[1]);
-
+                power[0] = p[0] + derivative[0] + integral[0];
+                power[1] = p[1] + derivative[1] + integral[1];
 
                 wheels[0].setPower(power[0]);
                 wheels[1].setPower(power[1]);
 
-
-                sleep((long) dt);
+                sleep((long) 20);
             }
 
             // Stop all motion;
-            for (int i = 0; i < 4; i++){
+            for (int i = 0; i < 2; i++){
                 wheels[i].setPower(0);
-
                 // Resets encoders
                 wheels[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 wheels[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
