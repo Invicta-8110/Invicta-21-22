@@ -10,7 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class FreightFrenzyTeleop extends LinearOpMode {
 
     FreightFrenzyHardware robot = new FreightFrenzyHardware();
-    //private static final MAX_POSITION =
+    private static final int POSITIVE_LIMIT = 1000;
+    private static final int NEGATIVE_LIMIT = -1000;
 
     @Override
     public void runOpMode() {
@@ -20,19 +21,21 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         DcMotor right = robot.right;
         DcMotor arm = robot.arm;
         //CRServo claw = robot.claw;
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //arm.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
 
         while (opModeIsActive()) {
 
-            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //left joystick for driving
 
             double drive = gamepad1.left_stick_y;//cl
             double turn = gamepad1.left_stick_x;//cl
-            double lift = gamepad1.right_stick_y;
+            double lift = -gamepad1.right_stick_y;
             //double grab = gamepad1.
 
             double speed = scaleInput(drive);
@@ -53,19 +56,31 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             if (gamepad1.right_stick_button || gamepad1.right_stick_button ) {
                 arm.setPower(0);
             } else {
-                arm.setPower(armPower);
-                telemetry.addData("Arm position: ", arm.getCurrentPosition());
-                telemetry.update();
-            }
+                if (arm.getCurrentPosition() > POSITIVE_LIMIT) {
+                    arm.setPower(0);
+                    if (lift < 0)
+                        arm.setPower(armPower);
+                }
+                else if (arm.getCurrentPosition() < NEGATIVE_LIMIT) {
+                    arm.setPower(0);
+                    if (lift > 0)
+                        arm.setPower(armPower);
+                }
+                else {
+                    arm.setPower(armPower);
+                }
 
+            }
+            telemetry.addData("Arm position: ", arm.getCurrentPosition());
+            telemetry.update();
 
 
       /*
       IMPORTANT TELEMETRY FOR DEBUGGING
        */
-            telemetry.addData("Right Power", "right (%.2f)", right.getPower());
-            telemetry.addData("Left Power", "left (%.2f)", left.getPower());
-            telemetry.update();
+          //  telemetry.addData("Right Power", "right (%.2f)", right.getPower());
+           // telemetry.addData("Left Power", "left (%.2f)", left.getPower());
+           // telemetry.update();
         }
     }
 
@@ -106,16 +121,16 @@ public class FreightFrenzyTeleop extends LinearOpMode {
     private double scaleArm(double joystick) {
 
         double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
-                0.15, 0.2, 0.25, 0.3};
+                0.15, 0.2, 0.25, 0.3, 0.35, 0.4};
 
         //get the corresponding index for the scaleInput array
-        int index = (int) (joystick * 9.0);
+        int index = (int) (joystick * 11.0);
 
         //index should be positive
         index = Math.abs(index);
 
-        if (index > 9) {
-            index = 9;
+        if (index > 11) {
+            index = 11;
         }
 
         //get value from the array

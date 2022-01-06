@@ -31,7 +31,7 @@ public class ColorPipeline extends OpenCvPipeline {
     public static int[] HLS2 = new int[3];
 
     //public enum Barcode {
-    //    ONE, TWO, THREE.s
+    //    ONE, TWO, THREE
     //}
     //private Barcode number = Barcode.THREE;
     //private volatile Barcode number = Barcode.THREE;

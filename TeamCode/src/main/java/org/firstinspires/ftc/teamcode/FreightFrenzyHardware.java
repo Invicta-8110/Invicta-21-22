@@ -15,7 +15,7 @@ class FreightFrenzyHardware {
     DcMotor left;
     //DcMotor pivot;
     DcMotor arm;
-    CRServo claw;
+    //CRServo claw;
 
     public void init(HardwareMap hardwareMap) {
 
@@ -23,7 +23,7 @@ class FreightFrenzyHardware {
         left = hardwareMap.get(DcMotor.class, "left");
         //pivot = hardwareMap.get(DcMotor.class, "pivot");
         arm = hardwareMap.get(DcMotor.class, "arm");
-        claw = hardwareMap.get(CRServo.class, "claw");
+        //claw = hardwareMap.get(CRServo.class, "claw");
 
 
         right.setDirection(DcMotor.Direction.REVERSE);
@@ -31,7 +31,7 @@ class FreightFrenzyHardware {
         //pivot.setDirection(DcMotor.Direction.FORWARD);
         arm.setDirection(DcMotor.Direction.FORWARD);
 
-        claw.setDirection(CRServo.Direction.FORWARD);
+        //claw.setDirection(CRServo.Direction.FORWARD);
 
         //right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -43,7 +43,7 @@ class FreightFrenzyHardware {
         arm.setPower(0);
         //pivot.setPower(0);
 
-        claw.setPower(0);
+        //claw.setPower(0);
 
     }
 //h
