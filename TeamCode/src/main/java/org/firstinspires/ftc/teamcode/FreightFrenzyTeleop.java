@@ -10,19 +10,23 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class FreightFrenzyTeleop extends LinearOpMode {
 
     FreightFrenzyHardware robot = new FreightFrenzyHardware();
-    DcMotor left = robot.left;
-    DcMotor right = robot.right;
-    DcMotor arm = robot.arm;
-    CRServo claw = robot.claw;
+    //private static final MAX_POSITION =
 
     @Override
     public void runOpMode() {
 
-
+        robot.init(hardwareMap);
+        DcMotor left = robot.left;
+        DcMotor right = robot.right;
+        DcMotor arm = robot.arm;
+        //CRServo claw = robot.claw;
 
         waitForStart();
 
         while (opModeIsActive()) {
+
+            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //left joystick for driving
 
@@ -50,7 +54,11 @@ public class FreightFrenzyTeleop extends LinearOpMode {
                 arm.setPower(0);
             } else {
                 arm.setPower(armPower);
+                telemetry.addData("Arm position: ", arm.getCurrentPosition());
+                telemetry.update();
             }
+
+
 
       /*
       IMPORTANT TELEMETRY FOR DEBUGGING
