@@ -9,14 +9,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "Actual Tele-Op", group = "Freight Frenzy")
 public class FreightFrenzyTeleop extends LinearOpMode {
 
+    FreightFrenzyHardware robot = new FreightFrenzyHardware();
+    DcMotor left = robot.left;
+    DcMotor right = robot.right;
+    DcMotor arm = robot.arm;
+    CRServo claw = robot.claw;
+
     @Override
     public void runOpMode() {
 
-        DcMotor left = hardwareMap.dcMotor.get("left");
-        DcMotor right = hardwareMap.dcMotor.get("right");
 
-        left.setDirection(DcMotor.Direction.REVERSE);
-        right.setDirection(DcMotor.Direction.FORWARD);
 
         waitForStart();
 
@@ -26,12 +28,14 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             double drive = gamepad1.left_stick_y;//cl
             double turn = gamepad1.left_stick_x;//cl
+            double lift = gamepad1.right_stick_y;
+            //double grab = gamepad1.
 
             double speed = scaleInput(drive);
 
             double leftPower = scaleInput(drive + turn);
-
             double rightPower = scaleInput(drive - turn);
+            double armPower = scaleArm(lift);
 
 
             if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
@@ -40,6 +44,12 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             } else {
                 left.setPower(leftPower);
                 right.setPower(rightPower);
+            }
+
+            if (gamepad1.right_stick_button || gamepad1.right_stick_button ) {
+                arm.setPower(0);
+            } else {
+                arm.setPower(armPower);
             }
 
       /*
@@ -82,5 +92,36 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         //return scaled value
         return dScale;
     }
+
+    //scales the input from the joystick controlling the lifting/lowerin
+    //of the arm, slower adjusted speeds than driving controls
+    private double scaleArm(double joystick) {
+
+        double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
+                0.15, 0.2, 0.25, 0.3};
+
+        //get the corresponding index for the scaleInput array
+        int index = (int) (joystick * 9.0);
+
+        //index should be positive
+        index = Math.abs(index);
+
+        if (index > 9) {
+            index = 9;
+        }
+
+        //get value from the array
+        double dScale;
+        if(joystick < 0){
+            dScale = -scaleArray[index];
+        } else{
+            dScale = scaleArray[index];
+        }
+
+        //return scaled value
+        return dScale;
+
+    }
+
 
 }
