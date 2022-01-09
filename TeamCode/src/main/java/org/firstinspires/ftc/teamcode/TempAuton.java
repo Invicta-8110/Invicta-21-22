@@ -29,6 +29,12 @@ public class TempAuton extends LinearOpMode {
         // Displays on phone
         telemetry.addData(">", "Calibrating Gyro");
         telemetry.update();
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+
+        }
     }
 
 
