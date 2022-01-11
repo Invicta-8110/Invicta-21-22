@@ -27,10 +27,10 @@ public class HyePIDTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        //robot.init(hardwareMap);
+        robot.init(hardwareMap);
 
-        wheels[0] = hardwareMap.dcMotor.get("left");
-        wheels[1] = hardwareMap.dcMotor.get("right");
+        wheels[0] = robot.right;
+        wheels[1] = robot.left;
 
         wheels[0].setDirection(DcMotor.Direction.REVERSE);
 
@@ -97,6 +97,8 @@ public class HyePIDTesting extends LinearOpMode {
             //double[] previousArea = new double[2];
 
             error[0] = tolerance + 1; //set to greater than tolerance to enter loop below
+            previousError[0] = 0;
+            previousError[1] = 0;
 
             while ((Math.abs(error[0]) > tolerance) && opModeIsActive()) { // TODO: replace error[0] with avgError
 
@@ -124,11 +126,8 @@ public class HyePIDTesting extends LinearOpMode {
 
                 telemetry.update();
 
-                runtime.reset(); //reset timer
+                //runtime.reset(); //reset timer
                 //sleep((long) 5000);
-
-                previousError[0] = error[0];
-                previousError[1] = error[1];
 
                 error[0] = (int)(distanceCM * COUNTS_PER_CM) - wheels[0].getCurrentPosition();
                 error[1] = (int)(distanceCM * COUNTS_PER_CM) - wheels[1].getCurrentPosition();
@@ -144,8 +143,9 @@ public class HyePIDTesting extends LinearOpMode {
                 integral[0] += ki * (error[0] * time);
                 integral[1] += ki * (error[1] * time);
 
-                derivative[0] = kd * ((error[0] - previousError[0]) / time);
-                derivative[1] = kd * ((error[1] - previousError[1]) / time);
+                derivative[0] = kd * ((error[0] - previousError[0]) / runtime.seconds());
+                derivative[1] = kd * ((error[1] - previousError[1]) / runtime.seconds());
+                //may need to replace runtime.seconds() with time variable
 
                 power[0] = p[0] + derivative[0] + integral[0];
                 power[1] = p[1] + derivative[1] + integral[1];
@@ -153,6 +153,10 @@ public class HyePIDTesting extends LinearOpMode {
                 wheels[0].setPower(power[0]);
                 wheels[1].setPower(power[1]);
 
+                previousError[0] = error[0];
+                previousError[1] = error[1];
+
+                runtime.reset();
                 sleep((long) 20);
             }
 
@@ -164,6 +168,74 @@ public class HyePIDTesting extends LinearOpMode {
                 wheels[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
         }
+    }
+
+    /*
+    public void PIDArm(int level, double tolerance) {
+
+        double error;
+        double previousError;
+        double targetPosition;
+        double speedError;
+        double referenceSpeed;
+
+        if (opModeIsActive()) {
+            telemetry.addData("Arm: ", "entered");
+
+            if (level == 2) {
+
+                targetPosition = 500; //tune value
+                referenceSpeed = 0.1;
+
+                while (Math.abs(error)) {
+                    speedError =
+
+                    runtime.reset();
+                }
+            }
+            else if (level == 3) {
+                targetPosition = 1000; //tune value
+                while (Math.abs(error)) {
+
+
+                    runtime.reset();
+                }
+            }
+        }
+    }
+
+     */
+
+    public void liftArm(int level) {
+        DcMotor arm = robot.arm;
+
+        if (level == 2) {
+
+            arm.setPower(0.5);
+            sleep(20);
+
+            arm.setPower(0.4);
+            sleep(20);
+
+            arm.setPower(0.35);
+            sleep(20);
+
+            arm.setPower(0.3);
+            sleep(20);
+
+            arm.setPower(0.25);
+            sleep(20);
+
+            arm.setPower(0.20); //equilibrium power
+        }
+
+        else if (level == 3) {
+            arm.setPower(0.5);
+            sleep(20);
+
+            //equilibrium power
+        }
+
     }
 
     //TODO: Figure out what this is

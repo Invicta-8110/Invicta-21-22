@@ -17,9 +17,6 @@ public class TempAuton extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        // Set up telemetry
-        //composeTelemetry();
-
         // Initialize hardware
         robot.init(hardwareMap);
 
@@ -33,6 +30,19 @@ public class TempAuton extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            //camera --> decide barcode
+
+            //move to carousel, turn on + off carousel motor
+            ////turn right, pid backwards
+
+            //move to hub
+            ////pid forward, turn left, pid forward (not right up to hub)
+
+            //lift arm, scoot forward
+            //open claw + close claw
+            //scoot back, arm back to rest (down)
+
+            //turn right, pid forward to warehouse
 
         }
     }
