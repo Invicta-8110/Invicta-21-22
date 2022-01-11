@@ -13,25 +13,26 @@ public class ColorPipeline extends OpenCvPipeline {
     //private Point SIDE_BOTTOM_LEFT = new Point(0, 211.2);
     //private Point SIDE_TOP_RIGHT = new Point(114.56,249.6);
     private static final Point REGION1_BOTTOM_LEFT = new Point(205.28,211.2);
-    private static final Point REGION1_TOP_RIGHT = new Point(320,249.6);
+    private static final Point REGION1_TOP_RIGHT = new Point(256.48,249.6);
     private static final Point REGION2_BOTTOM_LEFT = new Point(588.8, 211.2);
     private static final Point REGION2_TOP_RIGHT = new Point(640,249.6);
 
-    private static final Scalar GREEN = new Scalar(0, 255, 0);
+    private static final Scalar GREEN =  new Scalar(0, 255, 0); //RGB
 
     //Mat Side;
     Mat Region1, Region2;
     //Mat Color = new Mat();
-    Mat HLS = new Mat();
+    //Mat HLS = new Mat();
     //int avgSide;
 
-    private int avg1, avg2;
-    private int barcode;
+    //private int avg1, avg2;
+    private static Scalar avg1, avg2;
+    private static int barcode;
     public static int[] HLS1 = new int[3];
     public static int[] HLS2 = new int[3];
 
     //public enum Barcode {
-    //    ONE, TWO, THREE.s
+    //    ONE, TWO, THREE
     //}
     //private Barcode number = Barcode.THREE;
     //private volatile Barcode number = Barcode.THREE;
@@ -57,20 +58,16 @@ public class ColorPipeline extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
 
         //inputToCb(input);
-        Imgproc.cvtColor(input, HLS, Imgproc.COLOR_RGB2HLS);
+        //Imgproc.cvtColor(input, HLS, Imgproc.COLOR_RGB2HLS);
 
-        Region1 = HLS.submat(new Rect(REGION1_BOTTOM_LEFT,REGION1_TOP_RIGHT));
-        Region2 = HLS.submat(new Rect(REGION2_BOTTOM_LEFT,REGION2_TOP_RIGHT));
+        Region1 = input.submat(new Rect(REGION1_BOTTOM_LEFT,REGION1_TOP_RIGHT));
+        Region2 = input.submat(new Rect(REGION2_BOTTOM_LEFT,REGION2_TOP_RIGHT));
         //avgSide = (int) Core.mean(Side).val[0];
-        avg1 = (int) Core.mean(Region1).val[0];
-        avg2 = (int) Core.mean(Region2).val[0];
+        //avg1 = (int) Core.mean(Region1).val[0];
+       // avg2 = (int) Core.mean(Region2).val[0];
 
-        for (int i = 0; i < 3; i++){
-            // Finds the average HSV value for each channel of interest (The "i" representing the channel of interest)
-            HLS1[i] = (int) Core.mean(Region1).val[i];
-            HLS2[i] = (int) Core.mean(Region2).val[i];
-        }
-
+        avg1 = Core.mean(Region1);
+        avg2 = Core.mean(Region2);
 
         //find max color value for both side + barcodes
         //test color space for biggest contrast between
@@ -87,7 +84,7 @@ public class ColorPipeline extends OpenCvPipeline {
             );*/
 
         Imgproc.rectangle(
-                HLS,
+                input,
                 REGION1_BOTTOM_LEFT,
                 REGION1_TOP_RIGHT,
                 GREEN,
@@ -95,7 +92,7 @@ public class ColorPipeline extends OpenCvPipeline {
         );
 
         Imgproc.rectangle(
-                HLS,
+                input,
                 REGION2_BOTTOM_LEFT,
                 REGION2_TOP_RIGHT,
                 GREEN,
@@ -104,34 +101,39 @@ public class ColorPipeline extends OpenCvPipeline {
 
         findBarcode();
 
-        return HLS;
+        return input;
     }
+
+    //determine if colors are same
+    //public boolean sameColor(Scalar one, Scalar two) {
+
+    //}
 
     //determine which barcode has the element
-    public void findBarcode() {
-        if (Math.abs(avg1 - avg2) <= 10) {
+    public static void findBarcode() {
+        if (Math.abs(avg1.val[0] - avg2.val[0]) <= 50) {
             barcode = 3;
         }
-        else if (avg2 > avg1) {
-            barcode = 2;
-        }
-        else if (avg1 > avg2) {
+        else if (avg2.val[0] > avg1.val[0]) {
             barcode = 1;
         }
-
+        else if (avg1.val[0] > avg2.val[0]) {
+            barcode = 2;
+        }
     }
 
+
     //return barcode constant
-    public int getBarcode() {
+    public static int getBarcode() {
         return barcode;
     }
 
     //get methods for average color values
-    public int getAvg1() {
+    public Scalar getAvg1() {
         return avg1;
     }
 
-    public int getAvg2() {
+    public Scalar getAvg2() {
         return avg2;
     }
 

@@ -14,7 +14,7 @@ public class FreightFrenzyBarcodeReader extends LinearOpMode {
     WebcamName webcam;
     OpenCvWebcam camera;
     ColorPipeline pipeline;
-//
+
     @Override
     public void runOpMode() throws InterruptedException{
         //camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
@@ -48,13 +48,10 @@ public class FreightFrenzyBarcodeReader extends LinearOpMode {
             //telemetry.addData("Region 1: ", pipeline.getAvg1());
             //telemetry.addData("Region 2: ", pipeline.getAvg2());
             //telemetry.addData("Move To: ", number);
-            telemetry.addData("Region 1 H", ColorPipeline.HLS1[0]);
-            telemetry.addData("Region 1 S", ColorPipeline.HLS1[1]);
-            telemetry.addData("Region 1 V", ColorPipeline.HLS1[2]);
 
-            telemetry.addData("Region 2 H", ColorPipeline.HLS2[0]);
-            telemetry.addData("Region 2 S", ColorPipeline.HLS2[1]);
-            telemetry.addData("Region 2 V", ColorPipeline.HLS2[2]);
+            telemetry.addData("barcode: ", ColorPipeline.getBarcode());
+            telemetry.addData("avg1: ", pipeline.getAvg1());
+            telemetry.addData("avg2: ", pipeline.getAvg2());
 
             telemetry.update();
         }

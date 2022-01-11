@@ -21,12 +21,12 @@ public class ArmTeleOp extends LinearOpMode{
 
         while (opModeIsActive()) {
 
-            if (gamepad1.b) {
+            /*if (gamepad1.b) {
                 robot.claw.setPower(0.1 + robot.claw.getPower());
             }
             else if (gamepad1.a) {
                 robot.claw.setPower(robot.claw.getPower() - 0.1);
-            }
+            }*/
 
 
             if (gamepad1.y) {

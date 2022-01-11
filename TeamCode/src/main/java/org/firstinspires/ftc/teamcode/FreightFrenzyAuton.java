@@ -36,9 +36,6 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 @Autonomous(name = "FreightFrenzyAuton", group = "robot")
 public class FreightFrenzyAuton extends LinearOpMode {
 
-    OpenCvInternalCamera phoneCam;
-    //FreightFrenzyBarcodeReader.RingDetectionPipeline pipeline;
-
     private FreightFrenzyHardware robot = new FreightFrenzyHardware();
     private Orientation angles;
     private Acceleration gravity;
@@ -93,12 +90,6 @@ public class FreightFrenzyAuton extends LinearOpMode {
             idle();
 
         }
-
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-
-        phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
 
 
         // Enable encoders
