@@ -22,7 +22,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         DcMotor arm = robot.arm;
         DcMotor carousel = robot.carousel;
         CRServo claw = robot.claw;
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //arm.setDirection(DcMotor.Direction.REVERSE);
 
@@ -30,30 +30,34 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-
+            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //left joystick for driving
 
             double drive = gamepad1.left_stick_y;//cl
-            double turn = -gamepad1.left_stick_x;//cl
-            double lift = -gamepad1.right_stick_y;
+            double turn = gamepad1.left_stick_x;//cl
+            //double lift = -gamepad1.right_stick_y;
             //double grab = gamepad1.
 
             double speed = scaleInput(drive);
 
             double leftPower = scaleInput(drive + turn);
             double rightPower = scaleInput(drive - turn);
-            double armPower = scaleArm(lift);
+            //double armPower = scaleArm(lift);
 
 
-            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
+            if (gamepad1.left_stick_button) { //emergency stop if joystick drifts
                 left.setPower(0);
                 right.setPower(0);
             } else {
                 left.setPower(leftPower);
                 right.setPower(rightPower);
             }
+
+            telemetry.addData("Right Power", "right (%.2f)", right.getPower());
+            telemetry.addData("Left Power", "left (%.2f)", left.getPower());
+            telemetry.update();
 
             /*
             if (gamepad1.right_stick_button || gamepad1.right_stick_button ) {
@@ -91,27 +95,19 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
              */
 
+            //NEW STUFF
             if (gamepad1.a) {
-                while (arm.getCurrentPosition() > 5) {
+                while (arm.getCurrentPosition() > 10) {
                     arm.setPower(0.1); //pid lifting
                 }
-                arm.setPower(0);
+                arm.setPower(0); //equilibrium power
             }
 
             if (gamepad1.x) {
-                if (arm.getCurrentPosition() > 500) {
-                    while (arm.getCurrentPosition() > 500) {
-                        arm.setPower(-0.1);
-                    }
-                    arm.setPower(0); //set it to equilibrium power
+                while (arm.getCurrentPosition() < 500) {
+                    arm.setPower(0.1);
                 }
-
-                else if (arm.getCurrentPosition() < 500) {
-                    while (arm.getCurrentPosition() < 500) {
-                        arm.setPower(0.1); //pid lifting
-                    }
-                    arm.setPower(0); //set to equil power
-                }
+                arm.setPower(0); //set it to equilibrium power
             }
 
             if (gamepad1.y) {
@@ -170,9 +166,9 @@ public class FreightFrenzyTeleop extends LinearOpMode {
       /*
       IMPORTANT TELEMETRY FOR DEBUGGING
        */
-          //  telemetry.addData("Right Power", "right (%.2f)", right.getPower());
-           // telemetry.addData("Left Power", "left (%.2f)", left.getPower());
-           // telemetry.update();
+            telemetry.addData("Right Power", "right (%.2f)", right.getPower());
+            telemetry.addData("Left Power", "left (%.2f)", left.getPower());
+            telemetry.update();
         }
     }
 

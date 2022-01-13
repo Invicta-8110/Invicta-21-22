@@ -46,7 +46,7 @@ public class HyePIDTesting extends LinearOpMode {
 
         waitForStart();
 
-        PIDDrive(60, 2.5);
+        PIDDrive(60, 10);
         sleep(100);
 
 
@@ -239,7 +239,6 @@ public class HyePIDTesting extends LinearOpMode {
     }
 
     //TODO: Figure out what this is
-    /*PROJECT FOR LATER
     public void PIDTurn(double distanceCM, double tolerance) {
 
         int []newWheelTarget = new int[4];
@@ -329,7 +328,9 @@ public class HyePIDTesting extends LinearOpMode {
                 wheels[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
         }
-    }*/
+    }
+
+
 
     /*WE PHYSICALLY CANNOT DO THIS
     public void PIDStrafe(double distanceCM, double tolerance) { // TODO: Adjust Tolerance
