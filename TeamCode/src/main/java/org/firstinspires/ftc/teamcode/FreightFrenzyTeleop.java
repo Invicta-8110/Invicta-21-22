@@ -4,10 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 //weeee let's push again :weary:
 @TeleOp(name = "Actual Tele-Op", group = "Freight Frenzy")
 public class FreightFrenzyTeleop extends LinearOpMode {
+
+    ElapsedTime timer = new ElapsedTime();
 
     FreightFrenzyHardware robot = new FreightFrenzyHardware();
     private static final int POSITIVE_LIMIT = 1000;
@@ -20,7 +24,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         DcMotor left = robot.left;
         DcMotor right = robot.right;
         DcMotor arm = robot.arm;
-        CRServo claw = robot.claw;
+        Servo claw = robot.claw;
         DcMotor carousel = robot.carousel;
 
         // arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -51,7 +55,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             //left joystick for driving
 
             double drive = gamepad1.left_stick_y;//cl
-            double turn = gamepad1.left_stick_x;//cl
+            double turn = -gamepad1.left_stick_x;//cl
             double lift = -gamepad1.right_stick_y;
 
             double speed = scaleInput(drive);
@@ -92,31 +96,38 @@ public class FreightFrenzyTeleop extends LinearOpMode {
                 }
                 */
 
-            if (gamepad1.right_bumper) {
-                claw.setPower(1);
+            if (gamepad1.right_trigger != 0) {
+                claw.setPosition(10);
             }
-            if (gamepad1.left_bumper) {
-                claw.setPower(0);
+            if (gamepad1.left_trigger != 0) {
+                claw.setPosition(0);
             }
             if (gamepad1.dpad_right) {
-                carousel.setPower(0.15);
+                carousel.setPower(0.3);
                 sleep(1000);
                 carousel.setPower(0);
             }
 
             if (gamepad1.a) {
-                arm.setPower(0.3);
+                arm.setPower(0);
                 //arm.setZeroPowerBehavior(robot.arm.getZeroPowerBehavior());
             }
+            if (gamepad1.x) {
+                liftArm(2);
+            }
             if(gamepad1.y)
-                arm.setPower(0);
-            arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                //liftArm(3);
+                arm.setPower(0.2);
+            //arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
             if (gamepad1.b){
-                arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                arm.setTargetPosition(0);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                //arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                //arm.setTargetPosition(0);
+                //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                //while (timer.seconds() < 2)
+                arm.setPower(0.02);
+                //arm.setPower(-0.02);
                 //arm.setPower(0);
             }
             /*
@@ -209,5 +220,24 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
     }
 
+    public void liftArm(int level) {
+
+        if (level == 3) {
+            while (robot.arm.getCurrentPosition() < 76 && opModeIsActive()) {
+                robot.arm.setPower(0.2);
+                //robot.arm.setPower(0.1); //equilibrium power
+            }
+            robot.arm.setPower(0.05);
+        }
+
+        else if (level == 2) {
+            robot.arm.setPower(0.15);
+            robot.arm.setPower(0.1);
+            robot.arm.setPower(0.05);
+
+            //equilibrium power
+        }
+
+    }
 
 }

@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -40,7 +41,11 @@ public class TempAuton extends LinearOpMode {
 
         // Initialize hardware
         robot.init(hardwareMap);
-
+        DcMotor left = robot.left;
+        DcMotor right = robot.right;
+        DcMotor arm = robot.arm;
+        Servo claw = robot.claw;
+        DcMotor carousel = robot.carousel;
         // Reset encoders
         //robot.resetEncoders();
 
@@ -75,11 +80,11 @@ public class TempAuton extends LinearOpMode {
 
         while (opModeIsActive()) {
             //camera --> decide barcode
-            barcodeWithElement = pipeline.getBarcode();
-/*
+            //barcodeWithElement = pipeline.getBarcode();
+
             //move to carousel, turn on + off carousel motor
             ////turn right, pid backwards
-            PIDDrive(); // insert distance
+            PIDDrive(61, 5); // insert distance
             while (runtime.seconds() < 20) {
                 robot.carousel.setPower(0.4);
             }
@@ -92,12 +97,13 @@ public class TempAuton extends LinearOpMode {
             robot.right.setPower(0);
             robot.left.setPower(0);
 
-            PIDDrive(); // insert distance
+            PIDDrive(61, 5); // insert distance
+
 
             //move to hub
             ////pid forward, turn left, pid forward (not right up to hub)
-            PIDDrive();
-            PIDDrive();
+            PIDTurn(40, 5);
+            PIDDrive(30.48, 5);
             while (runtime.seconds() < 20) {
                 robot.right.setPower(0.4);
                 robot.left.setPower(-0.4);
@@ -105,15 +111,16 @@ public class TempAuton extends LinearOpMode {
             robot.right.setPower(0);
             robot.left.setPower(0);
 
-            PIDDrive();
+            PIDDrive(-15, 5);
 
+            /*
             //lift arm, scoot forward
             //open claw + close claw
             //scoot back, arm back to rest (down)
-            robot.arm.setPower();
+            robot.arm.setPower(0.2);
             PIDDrive();
-            robot.claw.setPower();
-            robot.claw.setPower(0);
+            robot.claw.setPosition(10);
+            robot.claw.setPosition(0);
             PIDDrive();
             robot.arm.setPower();
 
@@ -127,6 +134,7 @@ public class TempAuton extends LinearOpMode {
             robot.left.setPower(0);
             robot.arm.setPower();
             PIDDrive();
+
 
  */
         }
@@ -234,6 +242,97 @@ public class TempAuton extends LinearOpMode {
             robot.left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        }
+    }
+
+    public void PIDTurn(double distanceCM, double tolerance) {
+
+        int []newWheelTarget = new int[2];
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) { //if statewment, change
+
+            // Determine new target position, and pass to motor controller
+            //for (int i = 0; i < 2; i++) {
+            //    newWheelTarget[i] = wheels[i].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM); // TODO: Get avg position
+            //}
+
+            double kp = 1;
+            double kd = 0.000075; // Constant of derivation
+            double ki = 0.000006;
+
+            double dt = 20; //Delta time = 20 ms/cycle
+            double dtS = dt/1000;
+
+            double[] error = new double[2];
+
+            double avgError = 0;
+            double avgPreviousError = 0;
+
+            double avgArea = 0;
+            double previousArea = 0;
+
+            double Proportion = 0;
+
+            double avgPower = 0;
+
+            error[0] = tolerance + 1;
+
+            while ((Math.abs(error[0]) > tolerance) && opModeIsActive()) { // TODO: replace error[0] with avgError
+
+              //  telemetry.addData("Path1",  "Running to %7d :%7d", newWheelTarget[0], newWheelTarget[1]);
+               // telemetry.addData("Path2",  "Running at %7d :%7d", wheels[0].getCurrentPosition(), -wheels[1].getCurrentPosition());
+
+                telemetry.addData("Power: ", avgPower);
+
+                telemetry.addData("Proportion:", Proportion);
+
+                telemetry.addData("Derivative:", kd * ((avgError - avgPreviousError) / runtime.seconds()));
+                telemetry.addData("Integral:", ki * avgArea);
+
+                telemetry.addData("error:", avgError);
+                telemetry.addData("previous error:", avgPreviousError);
+
+                telemetry.addData("de(t)/dt", ((avgError - avgPreviousError) / runtime.seconds()));
+
+                telemetry.addData("∫e(t)dt:", avgArea);
+                telemetry.addData("previous ∫e(t)dt:", previousArea);
+
+                telemetry.addData("dtS", dtS);
+
+                telemetry.update();
+
+                error[0] = (int)(distanceCM * COUNTS_PER_CM) - robot.right.getCurrentPosition();
+                error[1] = (int)(-distanceCM * COUNTS_PER_CM) - robot.left.getCurrentPosition();
+
+
+                avgPreviousError = error[0];
+
+                Proportion = Math.abs(error[0])/(int)(distanceCM * COUNTS_PER_CM);
+
+                previousArea = avgArea;
+                avgArea = error[0] * dtS + previousArea;
+
+                avgPower = kp * Proportion + kd * ((error[0] - avgPreviousError) / runtime.seconds()) + (ki * avgArea);
+
+                robot.right.setPower(avgPower);
+                robot.left.setPower(-avgPower);
+
+                runtime.reset();
+                sleep((long) dt);
+            }
+
+            robot.right.setPower(0);
+
+            // Resets encoders
+            robot.right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            robot.left.setPower(0);
+
+            // Resets encoders
+            robot.left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 

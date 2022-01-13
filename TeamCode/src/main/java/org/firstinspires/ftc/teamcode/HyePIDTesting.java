@@ -46,13 +46,13 @@ public class HyePIDTesting extends LinearOpMode {
 
         waitForStart();
 
-        PIDDrive(60, 10);
-        sleep(100);
+        //PIDDrive(60, 10);
+        //sleep(100);
 
 
         //TODO: Work on the turning
-        //PIDTurn(100, 1);
-        //sleep(100);
+        PIDTurn(80, 5);
+        sleep(100);
 
         //PIDStrafe(120, 1);
         //sleep(100);
@@ -206,27 +206,19 @@ public class HyePIDTesting extends LinearOpMode {
 
      */
 
-    public void liftArm(int level) {
+    public  void liftArm(int level) {
         DcMotor arm = robot.arm;
 
-        if (level == 2) {
-
-            arm.setPower(0.5);
-            sleep(20);
-
-            arm.setPower(0.4);
-            sleep(20);
-
-            arm.setPower(0.35);
-            sleep(20);
+        if (level == 3) {
 
             arm.setPower(0.3);
-            sleep(20);
 
-            arm.setPower(0.25);
-            sleep(20);
+            arm.setPower(0.2);
+            //sleep(20);
 
-            arm.setPower(0.20); //equilibrium power
+            arm.setPower(0.15);
+
+            arm.setPower(0.1); //equilibrium power
         }
 
         else if (level == 3) {
@@ -241,14 +233,14 @@ public class HyePIDTesting extends LinearOpMode {
     //TODO: Figure out what this is
     public void PIDTurn(double distanceCM, double tolerance) {
 
-        int []newWheelTarget = new int[4];
+        int []newWheelTarget = new int[2];
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) { //if statewment, change
 
             // Determine new target position, and pass to motor controller
-            for (int i = 0; i < 4; i++) {
-                newWheelTarget[i] = wheels[0].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM); // TODO: Get avg position
+            for (int i = 0; i < 2; i++) {
+                newWheelTarget[i] = wheels[i].getCurrentPosition() + (int)(distanceCM * COUNTS_PER_CM); // TODO: Get avg position
             }
 
             double kp = 1;
@@ -258,7 +250,7 @@ public class HyePIDTesting extends LinearOpMode {
             double dt = 20; //Delta time = 20 ms/cycle
             double dtS = dt/1000;
 
-            double[] error = new double[4];
+            double[] error = new double[2];
 
             double avgError = 0;
             double avgPreviousError = 0;
@@ -274,20 +266,20 @@ public class HyePIDTesting extends LinearOpMode {
 
             while ((Math.abs(error[0]) > tolerance) && opModeIsActive()) { // TODO: replace error[0] with avgError
 
-                telemetry.addData("Path1",  "Running to %7d :%7d :%7d :%7d", newWheelTarget[0], newWheelTarget[1], newWheelTarget[2], newWheelTarget[3]);
-                telemetry.addData("Path2",  "Running at %7d :%7d :%7d :%7d", wheels[0].getCurrentPosition(), -wheels[1].getCurrentPosition(), -wheels[2].getCurrentPosition(), wheels[3].getCurrentPosition());
+                telemetry.addData("Path1",  "Running to %7d :%7d", newWheelTarget[0], newWheelTarget[1]);
+                telemetry.addData("Path2",  "Running at %7d :%7d", wheels[0].getCurrentPosition(), -wheels[1].getCurrentPosition());
 
                 telemetry.addData("Power: ", avgPower);
 
                 telemetry.addData("Proportion:", Proportion);
 
-                telemetry.addData("Derivative:", kd * ((avgError - avgPreviousError) / dtS));
+                telemetry.addData("Derivative:", kd * ((avgError - avgPreviousError) / runtime.seconds()));
                 telemetry.addData("Integral:", ki * avgArea);
 
                 telemetry.addData("error:", avgError);
                 telemetry.addData("previous error:", avgPreviousError);
 
-                telemetry.addData("de(t)/dt", ((avgError - avgPreviousError) / dtS));
+                telemetry.addData("de(t)/dt", ((avgError - avgPreviousError) / runtime.seconds()));
 
                 telemetry.addData("∫e(t)dt:", avgArea);
                 telemetry.addData("previous ∫e(t)dt:", previousArea);
@@ -296,11 +288,9 @@ public class HyePIDTesting extends LinearOpMode {
 
                 telemetry.update();
 
-
                 error[0] = (int)(distanceCM * COUNTS_PER_CM) - wheels[0].getCurrentPosition();
                 error[1] = (int)(-distanceCM * COUNTS_PER_CM) - wheels[1].getCurrentPosition();
-                error[2] = (int)(-distanceCM * COUNTS_PER_CM) - wheels[2].getCurrentPosition();
-                error[3] = (int)(distanceCM * COUNTS_PER_CM) - wheels[3].getCurrentPosition();
+
 
                 avgPreviousError = error[0];
 
@@ -309,18 +299,17 @@ public class HyePIDTesting extends LinearOpMode {
                 previousArea = avgArea;
                 avgArea = error[0] * dtS + previousArea;
 
-                avgPower = kp * Proportion + kd * ((error[0] - avgPreviousError) / dtS) + (ki * avgArea);
+                avgPower = kp * Proportion + kd * ((error[0] - avgPreviousError) / runtime.seconds()) + (ki * avgArea);
 
                 wheels[0].setPower(avgPower);
                 wheels[1].setPower(-avgPower);
-                wheels[2].setPower(-avgPower);
-                wheels[3].setPower(avgPower);
 
+                runtime.reset();
                 sleep((long) dt);
             }
 
             // Stop all motion;
-            for (int i = 0; i < 4; i++){
+            for (int i = 0; i < 2; i++){
                 wheels[i].setPower(0);
 
                 // Resets encoders
