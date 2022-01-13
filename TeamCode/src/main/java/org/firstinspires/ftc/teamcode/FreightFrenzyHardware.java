@@ -25,11 +25,10 @@ class FreightFrenzyHardware {
         carousel = hardwareMap.get(DcMotor.class, "carousel");
         claw = hardwareMap.get(CRServo.class, "claw");
 
-
         right.setDirection(DcMotor.Direction.REVERSE);
         left.setDirection(DcMotor.Direction.FORWARD);
         arm.setDirection(DcMotor.Direction.FORWARD);
-        carousel.setDirection(DcMotor.Direction.FORWARD);
+        carousel.setDirection(DcMotor.Direction.REVERSE);
         //claw.setDirection(CRServo.Direction.FORWARD);
 
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
