@@ -4,11 +4,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous(name="Hye Tests PID",group="Zach Tests")
 public class HyePIDTesting extends LinearOpMode {
-
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -23,11 +29,17 @@ public class HyePIDTesting extends LinearOpMode {
     DcMotor[] wheels = new DcMotor[2];
     FreightFrenzyHardware robot = new FreightFrenzyHardware();
 
+    //OpenCV
+    private int barcodeWithElement;
+    WebcamName webcam;
+    OpenCvWebcam camera;
+    ColorPipeline pipeline;
 
     @Override
     public void runOpMode() {
 
         robot.init(hardwareMap);
+        Servo claw = robot.claw;
 
         wheels[0] = robot.right;
         wheels[1] = robot.left;
@@ -40,22 +52,84 @@ public class HyePIDTesting extends LinearOpMode {
             wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
+        robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         telemetry.addData("Path0",  "Starting at %7d :%7d", wheels[0].getCurrentPosition(),wheels[1].getCurrentPosition());
 
         telemetry.update();
 
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = hardwareMap.get(WebcamName.class, "webcam");
+        camera = OpenCvCameraFactory.getInstance().createWebcam(webcam, cameraMonitorViewId);
+
+        camera.setMillisecondsPermissionTimeout(2500);
+        pipeline = new ColorPipeline();
+        camera.setPipeline(pipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+
+            @Override
+            public void onOpened() {
+                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addLine("Error Opening Camera");
+                telemetry.addData("ErrorCode: ", errorCode);
+                telemetry.update();
+            }
+        });
+
+        int clawPosition = 10;
+
         waitForStart();
 
-        //PIDDrive(60, 10);
-        //sleep(100);
+        while (opModeIsActive()) {
+
+            //claw.setPosition(clawPosition);
+
+            barcodeWithElement = pipeline.getBarcode();
+
+            PIDDrive(67, 5);
+
+            while (runtime.seconds() < 20) {
+                robot.carousel.setPower(0.6);
+            }
+            robot.carousel.setPower(0);
+
+            PIDDrive(-420,5);
+            break;
+
+            /*
+            //move to hub
+            ////pid forward, turn left, pid forward (not right up to hub)
+            PIDDrive(-125, 5); // insert distance
+
+            PIDTurn(-40, 5);
+
+            PIDDrive(-30.48, 10);
+            //PIDDrive(0, 0);
+            liftArm(barcodeWithElement);
+            PIDDrive(-5,5);
+            clawPosition = 0;
+            claw.setPosition(clawPosition);
+
+            PIDDrive(15, 10);
+            robot.arm.setPower(0);
+
+            // PIDDrive(25, 5);
+            PIDTurn(40, 5);
+            robot.arm.setPower(0.2);
+            PIDDrive(-125, 5);
+
+             */
 
 
-        //TODO: Work on the turning
-        PIDTurn(80, 5);
-        sleep(100);
-
-        //PIDStrafe(120, 1);
-        //sleep(100);
+            //TODO: Work on the turning
+            //PIDTurn(80, 5);
+            //sleep(100);
+        }
 
     }
 
@@ -206,26 +280,25 @@ public class HyePIDTesting extends LinearOpMode {
 
      */
 
-    public  void liftArm(int level) {
-        DcMotor arm = robot.arm;
+    public void liftArm(int level) {
 
-        if (level == 3) {
-
-            arm.setPower(0.3);
-
-            arm.setPower(0.2);
-            //sleep(20);
-
-            arm.setPower(0.15);
-
-            arm.setPower(0.1); //equilibrium power
+        if (level == 2) {
+            while (robot.arm.getCurrentPosition() < 76 && opModeIsActive()) {
+                robot.arm.setPower(0.2);
+                //robot.arm.setPower(0.1); //equilibrium power
+            }
+            robot.arm.setPower(0.05);
         }
 
         else if (level == 3) {
-            arm.setPower(0.5);
-            sleep(20);
+            robot.arm.setPower(0.15);
+            robot.arm.setPower(0.1);
+            robot.arm.setPower(0.05);
 
             //equilibrium power
+        }
+        else {
+            robot.arm.setPower(0.2);
         }
 
     }

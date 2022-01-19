@@ -37,21 +37,16 @@ public class FreightFrenzyBarcodeReader extends LinearOpMode {
                 telemetry.addLine("Error Opening Camera");
                 telemetry.addData("ErrorCode: ", errorCode);
                 telemetry.update();
-                }
+            }
         });
 
         waitForStart();
 
         while (opModeIsActive()) {
             int number = pipeline.getBarcode();
-
-            //telemetry.addData("Region 1: ", pipeline.getAvg1());
-            //telemetry.addData("Region 2: ", pipeline.getAvg2());
-            //telemetry.addData("Move To: ", number);
-
             telemetry.addData("barcode: ", ColorPipeline.getBarcode());
-            telemetry.addData("avg1: ", pipeline.getAvg1());
-            telemetry.addData("avg2: ", pipeline.getAvg2());
+            //telemetry.addData("avg1: ", pipeline.getAvg1());
+            //telemetry.addData("avg2: ", pipeline.getAvg2());
 
             telemetry.update();
         }
