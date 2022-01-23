@@ -206,7 +206,7 @@ public class TempAuton extends LinearOpMode {
 
     public void PIDArm(int level, double tolerance) {
 
-        double error;
+        double error = 0;
         double previousError;
         double targetPosition;
         double speedError;
@@ -220,19 +220,19 @@ public class TempAuton extends LinearOpMode {
                 targetPosition = 500; //tune value
                 referenceSpeed = 0.1;
 
-                while (Math.abs(error)) {
-                    speedError = Math.abs(referenceSpeed);
+                //while (Math.abs(error)) {
+                   // speedError = Math.abs(referenceSpeed);
 
-                    runtime.reset();
-                }
+                  //  runtime.reset();
+                //}
             }
             else if (level == 3) {
                 targetPosition = 1000; //tune value
-                while (Math.abs(error)) {
+                //while (Math.abs(error)) {
 
 
-                    runtime.reset();
-                }
+                  //  runtime.reset();
+                //}
             }
         }
     }

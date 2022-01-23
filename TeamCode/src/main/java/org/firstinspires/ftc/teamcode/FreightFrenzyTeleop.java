@@ -30,20 +30,24 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         // arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //arm.setDirection(DcMotor.Direction.REVERSE);
 
-        left.setDirection(DcMotor.Direction.FORWARD);
-        right.setDirection(DcMotor.Direction.REVERSE);
+        //left.setDirection(DcMotor.Direction.FORWARD);
+        //right.setDirection(DcMotor.Direction.REVERSE);
         arm.setDirection(DcMotor.Direction.FORWARD);
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //claw.setPosition(0.35);
 
         waitForStart();
 
-        int clawPosition = 0;
+        //int clawPosition = 0;
 
         while (opModeIsActive()) {
+
+            telemetry.addData("servo position", claw.getPosition());
+            telemetry.update();
 
             left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -93,13 +97,15 @@ public class FreightFrenzyTeleop extends LinearOpMode {
                 */
 
             if (gamepad1.right_trigger != 0) {
-                clawPosition = 10;
+                //clawPosition = 10;
+                claw.setPosition(0.5);
             }
             if (gamepad1.left_trigger != 0) {
-                clawPosition = 0;
+                //clawPosition = 0;
+                claw.setPosition(0.35);
             }
 
-            claw.setPosition(clawPosition);
+            //claw.setPosition(clawPosition);
 
             if (gamepad1.dpad_right) {
                 carousel.setPower(0.3);

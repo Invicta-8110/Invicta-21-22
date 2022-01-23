@@ -44,7 +44,8 @@ public class HyePIDTesting extends LinearOpMode {
         wheels[0] = robot.right;
         wheels[1] = robot.left;
 
-        wheels[0].setDirection(DcMotor.Direction.REVERSE);
+        wheels[0].setDirection(DcMotor.Direction.FORWARD);
+        wheels[1].setDirection(DcMotor.Direction.REVERSE);
 
         for (DcMotor wheel : wheels){
             wheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -81,7 +82,8 @@ public class HyePIDTesting extends LinearOpMode {
             }
         });
 
-        int clawPosition = 10;
+        //int clawPosition = 10;
+        claw.setPosition(0.5); //when pressed init, claw closes around preload
 
         waitForStart();
 
@@ -91,15 +93,16 @@ public class HyePIDTesting extends LinearOpMode {
 
             barcodeWithElement = pipeline.getBarcode();
 
-            PIDDrive(67, 5);
+            //PIDDrive()
 
-            while (runtime.seconds() < 20) {
+            while (runtime.seconds() < 4) {
                 robot.carousel.setPower(0.6);
             }
             robot.carousel.setPower(0);
-
-            PIDDrive(-420,5);
             break;
+
+           // PIDDrive(-420,5);
+           // break;
 
             /*
             //move to hub
