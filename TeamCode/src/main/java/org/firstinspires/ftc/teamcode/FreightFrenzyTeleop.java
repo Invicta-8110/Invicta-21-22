@@ -98,16 +98,16 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             if (gamepad1.right_trigger != 0) {
                 //clawPosition = 10;
-                claw.setPosition(0.5);
+                claw.setPosition(0.35);
             }
             if (gamepad1.left_trigger != 0) {
                 //clawPosition = 0;
-                claw.setPosition(0.35);
+                claw.setPosition(0.5);
             }
 
             //claw.setPosition(clawPosition);
 
-            if (gamepad1.dpad_right) {
+            if (gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up || gamepad1.dpad_down) {
                 carousel.setPower(0.3);
                 sleep(1000);
                 carousel.setPower(0);
@@ -116,10 +116,10 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             if (gamepad1.a) {
                 arm.setPower(0);
             }
-            if (gamepad1.x) {
-                liftArm(2);
-            }
-            if(gamepad1.y) {
+            //if (gamepad1.x) {
+            //    liftArm(2);
+            //}
+            if(gamepad1.b) {
                 //liftArm(3);
                 arm.setPower(0.2);
             }
