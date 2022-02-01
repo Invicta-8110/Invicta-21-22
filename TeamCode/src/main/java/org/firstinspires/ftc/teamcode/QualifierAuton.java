@@ -12,7 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name="Hye Tests PID",group="Zach Tests")
+@Autonomous(name="QualifierAuton",group="Zach Tests")
 public class QualifierAuton extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -82,7 +82,7 @@ public class QualifierAuton extends LinearOpMode {
         });
 
         //int clawPosition = 10;
-        claw.setPosition(0.5); //when pressed init, claw closes around preload
+        claw.setPosition(0.85); //when pressed init, claw closes around preload
 
         waitForStart();
 
@@ -92,12 +92,14 @@ public class QualifierAuton extends LinearOpMode {
 
             barcodeWithElement = pipeline.getBarcode();
 
-            PIDDrive(48.5, 1);
+            //PIDDrive(48.5, 1);
+            //PIDDrive(30,3);
             sleep(1000);
-            PIDTurn(-40, 1);
+            PIDTurn(-40, 5);
             sleep(1000);
             PIDDrive(-87.3, 1);
 
+            /*
             while (runtime.seconds() < 4) {
                 robot.carousel.setPower(0.6);
             }
@@ -113,6 +115,8 @@ public class QualifierAuton extends LinearOpMode {
             PIDDrive(-8.90875, 1);
             PIDTurn(-40, 1);
             PIDDrive(87.3125, 1);
+
+             */
 
             //TODO: Work on the turning
             //PIDTurn(80, 5);

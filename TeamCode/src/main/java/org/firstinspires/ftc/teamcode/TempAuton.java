@@ -204,7 +204,7 @@ public class TempAuton extends LinearOpMode {
     }
 
 
-    public void PIDArm(int level, double tolerance) {
+    /*public void PIDArm(int level, double tolerance) {
 
         double error = 0;
         double previousError;
