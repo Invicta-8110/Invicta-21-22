@@ -63,7 +63,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             double leftPower = scaleInput(drive + turn);
             double rightPower = scaleInput(drive - turn);
-            double armPower = scaleArm(lift);
+            //double armPower = scaleArm(lift);
 
             if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
                 left.setPower(0);
@@ -113,7 +113,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             //claw.setPosition(clawPosition);
 
             if (gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up || gamepad1.dpad_down) {
-                carousel.setPower(0.3);
+                carousel.setPower(0.6);
                 sleep(1000);
                 carousel.setPower(0);
             }
@@ -129,7 +129,9 @@ public class FreightFrenzyTeleop extends LinearOpMode {
                 arm.setPower(0.2);
             }
 
-
+            if (gamepad1.y) {
+                robot.levelOne.setPosition(0.5);
+            }
 
             //arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -170,6 +172,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
        */
             telemetry.addData("Right Power", "right (%.2f)", right.getPower());
             telemetry.addData("Left Power", "left (%.2f)", left.getPower());
+            telemetry.addData("levelOne position: ", robot.levelOne.getPosition());
             telemetry.update();
         }
     }

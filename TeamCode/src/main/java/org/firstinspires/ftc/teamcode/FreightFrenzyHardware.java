@@ -16,6 +16,7 @@ class FreightFrenzyHardware {
     DcMotor arm;
     DcMotor carousel;
     Servo claw;
+    Servo levelOne;
 
     public void init(HardwareMap hardwareMap) {
 
@@ -24,6 +25,8 @@ class FreightFrenzyHardware {
         arm = hardwareMap.get(DcMotor.class, "arm");
         carousel = hardwareMap.get(DcMotor.class, "carousel");
         claw = hardwareMap.get(Servo.class, "claw");
+        levelOne = hardwareMap.get(Servo.class,"levelOne");
+
 
         right.setDirection(DcMotor.Direction.REVERSE);
         left.setDirection(DcMotor.Direction.FORWARD);

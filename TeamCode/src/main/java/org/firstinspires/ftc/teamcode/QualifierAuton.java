@@ -83,6 +83,7 @@ public class QualifierAuton extends LinearOpMode {
 
         //int clawPosition = 10;
         claw.setPosition(0.85); //when pressed init, claw closes around preload
+        //robot.levelOne.setPosition(0); //start servo ready for level one hub
 
         waitForStart();
 
@@ -93,7 +94,8 @@ public class QualifierAuton extends LinearOpMode {
             barcodeWithElement = pipeline.getBarcode();
 
             //PIDDrive(48.5, 1);
-            //PIDDrive(30,3);
+            //PIDDrive(23.5,1);
+            PIDDrive(48.5,1);
             sleep(1000);
             PIDTurn(-40, 5);
             sleep(1000);
@@ -129,34 +131,37 @@ public class QualifierAuton extends LinearOpMode {
         //drop freight at correct hub level using barcode
         if (barcode == 1) {
             robot.arm.setPower(0.1);
-            //swing servo in
             robot.arm.setPower(0);
 
+            //PIDDrive(8,1); //drive into hub level
+
             //drop preload
-            robot.claw.setPosition(0);
+            robot.claw.setPosition(0.6);
             sleep(1000);
-            robot.claw.setPosition(0.5);
-            sleep(1000);
+            robot.claw.setPosition(0.85);
+            //sleep(1000);
 
             robot.arm.setPower(0.1);
             //swing servo back out
+            robot.levelOne.setPosition(0); //servo out of way
             robot.arm.setPower(0);
         }
         
         if (barcode == 2) {
-            robot.claw.setPosition(0);
+            //PIDDrive(8,1);
+
+            robot.claw.setPosition(0.6);
             sleep(1000);
-            robot.claw.setPosition(0.5);
-            sleep(1000);
+            robot.claw.setPosition(0.85);
         }
 
         if (barcode == 3) {
             robot.arm.setPower(0.2);
-            //mechnical stop???
-            robot.claw.setPosition(0);
+            //mechanical stop prevents arm from going too far back
+            robot.claw.setPosition(0.6);
             sleep(1000);
-            robot.claw.setPosition(0.5);
-            sleep(1000);
+            robot.claw.setPosition(0.85);
+            //sleep(1000);
         }
     }
 
