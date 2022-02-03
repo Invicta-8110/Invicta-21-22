@@ -98,12 +98,12 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             if (gamepad1.right_trigger != 0) { //right open
                 //clawPosition = 10;
-                claw.setPosition(0.6);
+                claw.setPosition(0.35);
 
             }
             if (gamepad1.left_trigger != 0) { //left close
                 //clawPosition = 0;
-                claw.setPosition(0.85);
+                claw.setPosition(0.5);
             }
 
             if(gamepad1.right_stick_button) {
@@ -131,6 +131,9 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             if (gamepad1.y) {
                 robot.levelOne.setPosition(0.5);
+            }
+            if (gamepad1.x) {
+                robot.levelOne.setPosition(0.24);
             }
 
             //arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

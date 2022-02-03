@@ -16,6 +16,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class QualifierAuton extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime clawTime = new ElapsedTime();
 
     // Constants to find the amount of encoder ticks per CM
     static final double COUNTS_PER_MOTOR_REV = 537.6;
@@ -83,7 +84,7 @@ public class QualifierAuton extends LinearOpMode {
 
         //int clawPosition = 10;
         claw.setPosition(0.85); //when pressed init, claw closes around preload
-        //robot.levelOne.setPosition(0); //start servo ready for level one hub
+        robot.levelOne.setPosition(0.5); //start servo ready for level one hub
 
         waitForStart();
 
@@ -92,14 +93,83 @@ public class QualifierAuton extends LinearOpMode {
             //claw.setPosition(clawPosition);
 
             barcodeWithElement = pipeline.getBarcode();
+            if (barcodeWithElement == 1) {
+                clawTime.reset();
+                while (clawTime.seconds() < 5) {
+                    telemetry.addLine("entered arm time");
+                    telemetry.update();
+                    robot.arm.setPower(0.2);
+                }
+                robot.arm.setPower(0);
+                //sleep(1000);
+                telemetry.addLine("exited arm time");
+                telemetry.update();
+
+                //PIDDrive(8,1); //drive into hub level
+
+                //drop preload
+                robot.claw.setPosition(0.35);
+                telemetry.addData("Claw position: ", robot.claw.getPosition());
+                telemetry.update();
+                sleep(1000);
+                robot.claw.setPosition(0.5);
+                //sleep(1000);
+
+                telemetry.addLine("first level, Claw done");
+                telemetry.update();
+                //PIDDrive(-8,1); //drive back out
+            }
+
+            else if (barcodeWithElement == 2) {
+                //PIDDrive(8,1);
+
+                robot.claw.setPosition(0.35);
+                sleep(1000);
+                robot.claw.setPosition(0.5);
+
+                telemetry.addLine("second level, Claw done");
+                telemetry.update();
+                //PIDDrive9-8,1); //drive back out
+
+                robot.arm.setPower(0.2);
+                //swing servo back out
+                //robot.levelOne.setPosition(0.24); //servo out of way
+                robot.arm.setPower(0);
+            }
+
+            else if (barcodeWithElement == 3) {
+                clawTime.reset();
+                while (clawTime.seconds() < 20) {
+                    robot.arm.setPower(0.3);
+                    robot.claw.setPosition(0.6);
+                }
+                //robot.arm.setPower(0.3);
+                //mechanical stop prevents arm from going too far back
+
+            /*
+            while (clawTime.seconds() < 10) {
+                robot.claw.setPosition(0.6);
+                sleep(500);
+            }
+
+             */
+                robot.claw.setPosition(0.85);
+                telemetry.addLine("drive back out");
+                telemetry.update();
+                //robot.levelOne.setPosition(0.24);
+                robot.arm.setPower(0);
+            }
 
             //PIDDrive(48.5, 1);
             //PIDDrive(23.5,1);
+            /*
             PIDDrive(48.5,1);
             sleep(1000);
             PIDTurn(-40, 5);
             sleep(1000);
             PIDDrive(-87.3, 1);
+
+             */
 
             /*
             while (runtime.seconds() < 4) {
@@ -118,6 +188,10 @@ public class QualifierAuton extends LinearOpMode {
             PIDTurn(-40, 1);
             PIDDrive(87.3125, 1);
 
+            //swing servo out
+            robot.arm.setPower(0.2);
+            robot.levelOne.setPosition(0.24);
+            robot.arm.setPower(0);
              */
 
             //TODO: Work on the turning
@@ -129,39 +203,66 @@ public class QualifierAuton extends LinearOpMode {
 
     public void placePreload(int barcode) {
         //drop freight at correct hub level using barcode
-        if (barcode == 1) {
-            robot.arm.setPower(0.1);
-            robot.arm.setPower(0);
+        if (barcode == 1 && opModeIsActive()) {
+            clawTime.reset();
+            while (opModeIsActive() && clawTime.seconds() < 5) {
+                robot.arm.setPower(0.2);
+            }
+            //robot.arm.setPower(0);
+            sleep(1000);
 
             //PIDDrive(8,1); //drive into hub level
 
             //drop preload
             robot.claw.setPosition(0.6);
-            sleep(1000);
+            //sleep(1000);
             robot.claw.setPosition(0.85);
             //sleep(1000);
 
-            robot.arm.setPower(0.1);
-            //swing servo back out
-            robot.levelOne.setPosition(0); //servo out of way
-            robot.arm.setPower(0);
+            telemetry.addLine("first level, Claw done");
+            telemetry.update();
+            //PIDDrive(-8,1); //drive back out
         }
         
-        if (barcode == 2) {
+        if (barcode == 2 && opModeIsActive()) {
             //PIDDrive(8,1);
 
             robot.claw.setPosition(0.6);
-            sleep(1000);
+            //sleep(1000);
             robot.claw.setPosition(0.85);
+
+            telemetry.addLine("second level, Claw done");
+            //PIDDrive9-8,1); //drive back out
+
+            robot.arm.setPower(0.2);
+            //swing servo back out
+            //robot.levelOne.setPosition(0.24); //servo out of way
+            robot.arm.setPower(0);
         }
 
-        if (barcode == 3) {
-            robot.arm.setPower(0.2);
+        if (barcode == 3 && opModeIsActive()) {
+            clawTime.reset();
+            while (clawTime.seconds() < 20) {
+                robot.arm.setPower(0.3);
+                robot.claw.setPosition(0.6);
+            }
+            //robot.arm.setPower(0.3);
             //mechanical stop prevents arm from going too far back
-            robot.claw.setPosition(0.6);
-            sleep(1000);
+
+            /*
+            while (clawTime.seconds() < 10) {
+                robot.claw.setPosition(0.6);
+                sleep(500);
+            }
+
+             */
             robot.claw.setPosition(0.85);
-            //sleep(1000);
+            telemetry.addLine("drive back out");
+            telemetry.update();
+            //robot.levelOne.setPosition(0.24);
+            robot.arm.setPower(0);
+
+
         }
     }
 
