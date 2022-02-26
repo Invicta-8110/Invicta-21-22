@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 // optional group places the OpMode into the Exercises group.
 // uncomment the @Disable annotation to remove the OpMode from the OpMode list.
 
-@Autonomous(name="Zach Plays With Auton", group="Freight Frenzy")
+@Autonomous(name="Zach Plays With Auton", group="tests")
 //@Disabled
 public class basicAutonTest extends LinearOpMode
 {

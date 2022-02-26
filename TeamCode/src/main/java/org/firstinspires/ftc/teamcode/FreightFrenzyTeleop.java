@@ -26,6 +26,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         DcMotor arm = robot.arm;
         Servo claw = robot.claw;
         DcMotor carousel = robot.carousel;
+        //DcMotor extender = robot.extender;
 
         // arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //arm.setDirection(DcMotor.Direction.REVERSE);
@@ -73,29 +74,6 @@ public class FreightFrenzyTeleop extends LinearOpMode {
                 right.setPower(rightPower);
             }
 
-            /*
-            if (gamepad1.right_stick_button || gamepad1.right_stick_button ) {
-                arm.setPower(0);
-            } else if (gamepad1.right_stick > 0.1) {
-                if (arm.getCurrentPosition() > POSITIVE_LIMIT) {
-                    arm.setPower(0);
-                    if (lift < 0)
-                        arm.setPower(armPower);
-                }
-                else if (arm.getCurrentPosition() < NEGATIVE_LIMIT) {
-                    arm.setPower(0);
-                    if (lift > 0)
-                        arm.setPower(armPower);
-                }
-                else {
-                    arm.setPower(armPower);
-                }
-            }
-            else if (gamepad1.right_stick_y < 0.1) {
-                    arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                }
-                */
-
             if (gamepad1.right_trigger != 0) { //right open
                 //clawPosition = 10;
                 claw.setPosition(0.35);
@@ -112,8 +90,13 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             //claw.setPosition(clawPosition);
 
-            if (gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up || gamepad1.dpad_down) {
+            if (gamepad1.dpad_right || gamepad1.dpad_down) {
                 carousel.setPower(0.6);
+                sleep(1000);
+                carousel.setPower(0);
+            }
+            else if (gamepad1.dpad_left || gamepad1.dpad_up) {
+                carousel.setPower(-0.8);
                 sleep(1000);
                 carousel.setPower(0);
             }
@@ -121,50 +104,19 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             if (gamepad1.a) {
                 arm.setPower(0);
             }
-            //if (gamepad1.x) {
-            //    liftArm(2);
-            //}
+
             if(gamepad1.b) {
                 //liftArm(3);
-                arm.setPower(0.2);
+                arm.setPower(0.1);
             }
 
             if (gamepad1.y) {
                 robot.levelOne.setPosition(0.5);
             }
-            if (gamepad1.x) {
-                robot.levelOne.setPosition(0.24);
-            }
-
-            //arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-            /*
-            if (gamepad1.b){
-                //arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                //arm.setTargetPosition(0);
-                //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                //while (timer.seconds() < 2)
-                arm.setPower(0.02);
-                //arm.setPower(-0.02);
-                //arm.setPower(0);
-            }
-
-
-            /*
-            if (gamepad1.right_stick_y == 0)
-            {
-                // we are in hold so use RTP
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.2);
-
-                while (gamepad1.right_stick_y == 0) {// Did we JUST let go of the stick?  if so, save location.
-                    arm.setTargetPosition(arm.getCurrentPosition());
-                }
-            }
-
-             */
-
+            /*if (gamepad1.x) {
+                //robot.levelOne.setPosition(0.24);
+                extender.setPower(0.2);
+            }*/
 
             //telemetry.addData("Arm position: ", arm.getCurrentPosition());
             //telemetry.update();
@@ -187,8 +139,12 @@ public class FreightFrenzyTeleop extends LinearOpMode {
      */
     private double scaleInput(double dval){
 
+        //
+        //double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
+                //0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, .7};
+
         double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
-                0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, .7};
+                0.15, 0.2, 0.25, 0.4, 0.45, 0.5, 0.65, 0.7, 0.75, 0.8, .9};
 
         //get the corresponding index for the scaleInput array
         int index = (int) (dval * 16.0);
