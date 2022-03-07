@@ -17,7 +17,7 @@ public class RegionalsAuton extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime clawTime = new ElapsedTime();
-
+//
     // Constants to find the amount of encoder ticks per CM
     static final double COUNTS_PER_MOTOR_REV = 537.6;
     static final double DRIVE_GEAR_REDUCTION = 1.0;
