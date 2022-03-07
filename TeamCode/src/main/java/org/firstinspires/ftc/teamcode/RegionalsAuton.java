@@ -25,7 +25,7 @@ public class RegionalsAuton extends LinearOpMode {
 
     // Finds the amount of encoder ticks per CM
     //static final double COUNTS_PER_CM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_CM * 3.1415);
-    static final double COUNTS_PER_CM = 537.6/(11.5* Math.PI);
+    static final double COUNTS_PER_CM = 1.22*(537.6/(11.5* Math.PI));
 
     DcMotor[] wheels = new DcMotor[2];
     FreightFrenzyHardware robot = new FreightFrenzyHardware();
@@ -84,14 +84,25 @@ public class RegionalsAuton extends LinearOpMode {
         });
 
         //int clawPosition = 10;
-        claw.setPosition(0.85); //when pressed init, claw closes around preload
+//        claw.setPosition(0.85); //when pressed init, claw closes around preload
         //robot.levelOne.setPosition(0.5); //start servo ready for level one hub
 
         waitForStart();
 
+        PIDDrive(50,1);
+
         while (opModeIsActive()) {
 
             barcodeWithElement = pipeline.getBarcode();
+
+//            PIDController pidDrive = new PIDController(1, 2, 3);
+//            pidDrive.setTolerance();
+//            pidDrive.setSetpoint();
+//            while (!pidDrive.onTarget()) {
+//                double output = pidDrive.calculate(robot.left.getCurrentPosition());
+//                robot.left.setPower(pidDrive.calculate(robot.left.getCurrentPosition()));
+//            }
+
 
             /*
             PIDDrive(18.5, 1);
@@ -130,15 +141,14 @@ public class RegionalsAuton extends LinearOpMode {
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
-
             telemetry.addData("inpid", "inside first while");
             telemetry.update();
             double[] p = new double[2];
 
             double kp = 1;
             //TODO: do kd and ki
-            double kd = 0.000075;
-            double ki = 0;
+            double kd = 0.000045;
+            double ki = 0.00001;
             //double kd = 0.000075; // Constant of derivation
             //double ki = 0.000006;
 
@@ -156,7 +166,7 @@ public class RegionalsAuton extends LinearOpMode {
 
             error[0] = tolerance + 1; //set to greater than tolerance to enter loop below
             previousError[0] = 0;
-            previousError[1] = 0;
+//            previousError[1] = 0;
 
             while ((Math.abs(error[0]) > tolerance) && opModeIsActive()) { // TODO: replace error[0] with avgError
 
@@ -180,40 +190,48 @@ public class RegionalsAuton extends LinearOpMode {
                 error[0] = (int) (distanceCM * COUNTS_PER_CM) - wheels[0].getCurrentPosition();
                 //error[1] = (int) (distanceCM * COUNTS_PER_CM) - wheels[1].getCurrentPosition();
 
-                p[0] = kp * error[0] / (int) (distanceCM * COUNTS_PER_CM);
+                p[0] = kp * Math.abs(error[0]) / (int) (distanceCM * COUNTS_PER_CM);
                 //p[1] = kp * error[1] / (int) (distanceCM * COUNTS_PER_CM);
 
                 //double time = runtime.time();
-                double time = 0.02; //seconds
+//                double time = 0.02; //seconds
                 //telemetry.addData("Time: ",time);
                 //telemetry.update();
 
-                integral[0] += ki * (error[0] * time);
+                integral[0] += ki * (error[0] * runtime.seconds());
                 //integral[1] += ki * (error[1] * time);
 
-                derivative[0] = kd * Math.abs((error[0] - previousError[0])) / runtime.seconds();
+                derivative[0] = kd * ((error[0] - previousError[0]) / runtime.seconds());
                 //derivative[1] = kd * ((error[1] - previousError[1]) / runtime.seconds());
                 //may need to replace runtime.seconds() with time variable
 
                 power[0] = p[0] + derivative[0] + integral[0];
                 //power[1] = p[1] + derivative[1] + integral[1];
-                if (distanceCM > 0) {
-                    wheels[0].setPower(power[0]);
-                    wheels[1].setPower(power[0]);
-                }
-                else {
-                    wheels[0].setPower(-power[0]);
-                    wheels[1].setPower(-power[0]);
-                }
+                wheels[0].setPower(power[0]);
+                wheels[1].setPower(power[0]);
+
 
                 previousError[0] = error[0];
                 //previousError[1] = error[1];
 
-                //telemetry.addData("Errpr:")
-                telemetry.addData("currentpostition: ", robot.left.getCurrentPosition());
-                telemetry.addData("currentposition right: ", robot.right.getCurrentPosition());
                 telemetry.addData("error:", error[0]);
                 telemetry.addData("previous error:", previousError[0]);
+
+                telemetry.addData("Target Angle: ", distanceCM);
+
+                telemetry.addData("Power", power[0]);
+
+                telemetry.addData("de(t)/dt: ", ((error[0] - previousError[0])/runtime.seconds()));
+
+                telemetry.addData("Proportion: ", p[0]);
+
+                telemetry.addData("Error: ", error);
+
+                telemetry.addData("Derivative: ", derivative[0]);
+                telemetry.addData("Integral: ", integral[0]);
+
+
+                telemetry.addData("Previous Error: ", previousError[0]);
 
 
                 //telemetry.addData("∫e(t)dt:", area[0]);
@@ -224,15 +242,14 @@ public class RegionalsAuton extends LinearOpMode {
                 telemetry.update();
 
                 runtime.reset();
-                sleep((long) 20);
             }
 
             // Stop all motion;
             for (int i = 0; i < 2; i++) {
                 wheels[i].setPower(0);
                 // Resets encoders
-                //wheels[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                //wheels[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                wheels[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                wheels[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
         }
     }
