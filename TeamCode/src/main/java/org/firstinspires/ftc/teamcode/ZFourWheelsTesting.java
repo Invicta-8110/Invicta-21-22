@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Four Motors",group="FreightFrenzy")
+@Autonomous(name="Four Motors",group="tests")
 
 public class ZFourWheelsTesting extends LinearOpMode {
 

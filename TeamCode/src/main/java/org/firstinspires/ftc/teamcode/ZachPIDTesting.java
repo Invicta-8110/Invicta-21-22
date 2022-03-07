@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Zach Tests PID",group="Zach Tests")
+@Autonomous(name="Zach Tests PID",group="tests")
 public class ZachPIDTesting extends LinearOpMode {
 
 

@@ -12,10 +12,19 @@ public class ColorPipeline extends OpenCvPipeline {
 
     //private Point SIDE_BOTTOM_LEFT = new Point(0, 211.2);
     //private Point SIDE_TOP_RIGHT = new Point(114.56,249.6);
-    private static final Point REGION1_BOTTOM_LEFT = new Point(205.28,211.2);
-    private static final Point REGION1_TOP_RIGHT = new Point(256.48,249.6);
-    private static final Point REGION2_BOTTOM_LEFT = new Point(588.8, 211.2);
-    private static final Point REGION2_TOP_RIGHT = new Point(640,249.6);
+
+
+    private static final Point REGION1_BOTTOM_LEFT = new Point(35.56 - 11.85,210.73 + 23.41);
+    private static final Point REGION1_TOP_RIGHT = new Point(106.67 - 11.85,257.56 + 35.12 - 17.56);
+    private static final Point REGION2_BOTTOM_LEFT = new Point(248.89, 210.73 + 23.41);
+    private static final Point REGION2_TOP_RIGHT = new Point(296.29,257.56 + 35.12 - 17.56);
+
+
+    /*private static final Point REGION1_BOTTOM_LEFT = new Point(0,378.24);
+    private static final Point REGION1_TOP_RIGHT = new Point(84.53,402.24);
+    private static final Point REGION2_BOTTOM_LEFT = new Point(277.74, 378.24);
+    private static final Point REGION2_TOP_RIGHT = new Point(350.19,402.24);*/
+
 
     private static final Scalar GREEN =  new Scalar(0, 255, 0); //RGB
 
@@ -136,5 +145,7 @@ public class ColorPipeline extends OpenCvPipeline {
     public Scalar getAvg2() {
         return avg2;
     }
+
+
 
 }

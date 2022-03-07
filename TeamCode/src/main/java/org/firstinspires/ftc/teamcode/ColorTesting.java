@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import android.graphics.Color;
 
 
-@TeleOp(name = "ColorTesting", group = "FreightFrenzy")
+@TeleOp(name = "ColorTesting", group = "tests")
 public class ColorTesting extends LinearOpMode{
 
     ColorSensor color;
