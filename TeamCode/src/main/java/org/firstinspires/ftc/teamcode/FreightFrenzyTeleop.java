@@ -25,8 +25,9 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         DcMotor right = robot.right;
         DcMotor arm = robot.arm;
         Servo claw = robot.claw;
+        Servo clawAngle = robot.clawAngle;
         DcMotor carousel = robot.carousel;
-        //DcMotor extender = robot.extender;
+        DcMotor extender = robot.extender;
 
         // arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //arm.setDirection(DcMotor.Direction.REVERSE);
@@ -39,7 +40,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        //claw.setPosition(0.35);
+        claw.setPosition(0.35);
 
         waitForStart();
 
@@ -47,8 +48,8 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            telemetry.addData("servo position", claw.getPosition());
-            telemetry.update();
+            //telemetry.addData("servo position", claw.getPosition());
+            //telemetry.update();
 
             left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -76,30 +77,47 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             if (gamepad1.right_trigger != 0) { //right open
                 //clawPosition = 10;
-                claw.setPosition(0.35);
+                //claw.setPosition(0.35);
+                claw.setPosition(0.5);
+                //claw.setPosition(1);
 
             }
             if (gamepad1.left_trigger != 0) { //left close
                 //clawPosition = 0;
-                claw.setPosition(0.5);
+                //claw.setPosition(0.85);
+                claw.setPosition(0);
             }
 
-            if(gamepad1.right_stick_button) {
-                claw.setPosition(.5);
+            /*if (gamepad1.right_bumper) { //right open
+                //clawPosition = 10;
+                //claw.setPosition(0.35);
+                //claw.setPosition(0.5);
+                claw.setPosition(1);
+
             }
+            if (gamepad1.left_bumper) { //left close
+                //clawPosition = 0;
+                //claw.setPosition(0.85);
+                claw.setPosition(0);
+            }*/
+
+            /*if(gamepad1.right_stick_button) {
+                claw.setPosition(.5);
+            }*/
 
             //claw.setPosition(clawPosition);
 
-            if (gamepad1.dpad_right || gamepad1.dpad_down) {
-                carousel.setPower(0.6);
+            if (gamepad1.dpad_right || gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_up) {
+                carousel.setPower(1);
                 sleep(1000);
                 carousel.setPower(0);
+                //carousel.setPower(-0.8);
             }
-            else if (gamepad1.dpad_left || gamepad1.dpad_up) {
+            /*else if (gamepad1.dpad_left || gamepad1.dpad_up) {
                 carousel.setPower(-0.8);
                 sleep(1000);
                 carousel.setPower(0);
-            }
+            }*/
 
             if (gamepad1.a) {
                 arm.setPower(0);
@@ -110,13 +128,19 @@ public class FreightFrenzyTeleop extends LinearOpMode {
                 arm.setPower(0.1);
             }
 
-            if (gamepad1.y) {
-                robot.levelOne.setPosition(0.5);
+            if (gamepad1.y) {   //closes
+               // robot.levelOne.setPosition(0.5);
+               //extender.setPower(-0.4);
+                clawAngle.setPosition(0.5);
             }
-            /*if (gamepad1.x) {
+            if (gamepad1.x) {   //extends
                 //robot.levelOne.setPosition(0.24);
-                extender.setPower(0.2);
-            }*/
+               //extender.setPower(0.4);
+                clawAngle.setPosition(0);
+            }
+            if (gamepad1.left_stick_button) {
+                extender.setPower(0);
+            }
 
             //telemetry.addData("Arm position: ", arm.getCurrentPosition());
             //telemetry.update();
@@ -127,7 +151,7 @@ public class FreightFrenzyTeleop extends LinearOpMode {
        */
             telemetry.addData("Right Power", "right (%.2f)", right.getPower());
             telemetry.addData("Left Power", "left (%.2f)", left.getPower());
-            telemetry.addData("levelOne position: ", robot.levelOne.getPosition());
+            //telemetry.addData("clawAngle: ", robot.clawAngle.getPosition());
             telemetry.update();
         }
     }

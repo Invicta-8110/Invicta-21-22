@@ -31,10 +31,10 @@ public class TempAuton extends LinearOpMode {
     FreightFrenzyHardware robot = new FreightFrenzyHardware();
 
     //OpenCV
-    private int barcodeWithElement;
+    private ColorDetect.Value colorValue;
     WebcamName webcam;
     OpenCvWebcam camera;
-    ColorPipeline pipeline;
+    ColorDetect pipeline;
 
     @Override
     public void runOpMode() {
@@ -66,7 +66,7 @@ public class TempAuton extends LinearOpMode {
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcam, cameraMonitorViewId);
 
         camera.setMillisecondsPermissionTimeout(2500);
-        pipeline = new ColorPipeline();
+        pipeline = new ColorDetect();
         camera.setPipeline(pipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
 
@@ -83,78 +83,20 @@ public class TempAuton extends LinearOpMode {
             }
         });
 
-        //int clawPosition = 10;
-        claw.setPosition(0.85); //when pressed init, claw closes around preload
-        robot.levelOne.setPosition(0.5); //start servo ready for level one hub
 
         waitForStart();
 
         while (opModeIsActive()) {
-
-            barcodeWithElement = pipeline.getBarcode();
-
-            //PIDDrive(51.8,1);
-            //PIDDrive(18.5, 1);
-            //sleep(500);
-            //PIDTurn(-37.5, 5);
-            //sleep(3000);
-            //PIDDrive(-78.0, 5);
-            //sleep(500);
-
-            //PIDTurn(-37.5, 5);
-            //sleep(1000);
-            //PIDDrive(-78.0, 5);
-            //sleep(500);
-            break;
-
-
-            /*
-            robot.levelOne.setPosition(0.24);
-            robot.arm.setPower(0);
-            telemetry.addLine("done with arm");
+            telemetry.addLine("entered opModeIsActive Loop");
             telemetry.update();
 
-             */
+            //pipeline.findBarcode();
+            colorValue = pipeline.getBarcode();
 
-            //PIDDrive(48.5, 1);
-            //PIDDrive(23.5,1);
-            /*
-            PIDDrive(48.5,1);
-            sleep(1000);
-            PIDTurn(-40, 5);
-            sleep(1000);
-            PIDDrive(-87.3, 1);
+            drive(colorValue);
+            colorValue = null;
 
-             */
-
-            /*
-            while (runtime.seconds() < 4) {
-                robot.carousel.setPower(0.6);
-            }
-            robot.carousel.setPower(0);
-
-            PIDDrive(141.9625, 1);
-            PIDTurn(40, 1);
-            PIDDrive(8.90875, 1);
-
-            //drop off freight at correct level
-            placePreload(barcodeWithElement);
-
-            PIDDrive(-8.90875, 1);
-            PIDTurn(-40, 1);
-            PIDDrive(87.3125, 1);
-
-            //swing servo out
-            robot.arm.setPower(0.2);
-            robot.levelOne.setPosition(0.24);
-            robot.arm.setPower(0);
-             */
-
-            //TODO: Work on the turning
-            //PIDTurn(80, 5);
-            //sleep(100);
-
-
+            turn(colorValue, "left");
         }
 
     }
@@ -275,9 +217,6 @@ public class TempAuton extends LinearOpMode {
             }
         }
     }
-
-
-    //TODO: Figure out what this is
     public void PIDTurn(double distanceCM, double tolerance) {
         wheels[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wheels[0].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -372,76 +311,90 @@ public class TempAuton extends LinearOpMode {
             }
         }
     }
-    public void placePreload(int barcode) {
-        //drop freight at correct hub level using barcode
-        if (barcodeWithElement == 3) {
-            telemetry.addLine("level 3");
+
+    public void drive(ColorDetect.Value colorValue) {
+
+        if (colorValue == ColorDetect.Value.ONE) {
+            telemetry.addLine("distance reached");
             telemetry.update();
 
-            robot.arm.setPower(0.2);
-            sleep(1000);
+            robot.left.setPower(0);
+            robot.right.setPower(0);
 
-            PIDDrive(70.5,5);
-            sleep(1000);
-
-            robot.claw.setPosition(0.35);
-            sleep(1000);
-            //robot.claw.setPosition(0.5);
-            //sleep(1000);
-
-            PIDDrive(-20.5,5);
-            //sleep(1000);
-            robot.arm.setPower(0);
-            sleep(1000);
-
-            telemetry.addLine("third level, Claw done");
+            telemetry.addLine("position reached");
             telemetry.update();
             //break;
-        } else if (barcodeWithElement == 2) {
-            telemetry.addLine("level 2");
+        } else if (colorValue == ColorDetect.Value.TWO) {
+            telemetry.addLine("too close");
             telemetry.update();
 
-            PIDDrive(63.5,5);
+            while(colorValue != ColorDetect.Value.ONE && opModeIsActive()) {
+                robot.left.setPower(-0.2);
+                robot.right.setPower(-0.2);
+                sleep(1000);
+                pipeline.findBarcode();
+                colorValue = pipeline.getBarcode();
+            }
+            robot.left.setPower(0);
+            robot.right.setPower(0);
 
-            robot.claw.setPosition(0.35);
-            sleep(1000);
-            //robot.claw.setPosition(0.5);
-            //sleep(2000);
-
-            PIDDrive(-13.5,5);
-            sleep(1000);
-            robot.arm.setPower(0.2);
-            sleep(1000);
-            robot.arm.setPower(0);
-            sleep(1000);
-
-            telemetry.addLine("second level, Claw done");
-            telemetry.update();
-            //PIDDrive9-8,1); //drive back out
-
-            robot.arm.setPower(0.2);
-            //break;
-        } else if (barcodeWithElement == 1) {
-            telemetry.addLine("level 1");
+            telemetry.addLine("position reached");
             telemetry.update();
 
-            robot.arm.setPower(0.2);
-            sleep(1000);
-            robot.arm.setPower(0);
-            sleep(1000);
+        } else if (colorValue == ColorDetect.Value.THREE) {
+            telemetry.addLine("too far");
+            telemetry.update();
 
-            PIDDrive(63.5,5);
+            while(colorValue != ColorDetect.Value.ONE && opModeIsActive()) {
+                robot.left.setPower(0.2);
+                robot.right.setPower(0.2);
+                sleep(1000);
+                pipeline.findBarcode();
+                colorValue = pipeline.getBarcode();
+            }
+            robot.left.setPower(0);
+            robot.right.setPower(0);
 
-            robot.claw.setPosition(0.35);
-            sleep(1000);
-            //robot.claw.setPosition(0.5);
-
-            PIDDrive(-13.5,5);
-            sleep(1000);
-            //sleep(2000);
-            telemetry.addLine("first level, Claw done");
+            telemetry.addLine("position reached");
             telemetry.update();
             // break;
+        }
+    }
+
+    public void turn(ColorDetect.Value colorValue, String direction) {
+
+        if (direction.equals("left")) {
+            if (colorValue != ColorDetect.Value.ONE) {
+                telemetry.addLine("too close");
+                telemetry.update();
+                while(colorValue != ColorDetect.Value.ONE && opModeIsActive()) {
+                    robot.left.setPower(-0.2);
+                    robot.right.setPower(0.2);
+                    sleep(1000);
+                    pipeline.findBarcode();
+                    colorValue = pipeline.getBarcode();
+                }
+            }
+            robot.left.setPower(0);
+            robot.right.setPower(0);
+            telemetry.addLine("position reached");
+            telemetry.update();
+        } else if (direction.equals("right")) {
+            if (colorValue != ColorDetect.Value.ONE) {
+                telemetry.addLine("too close");
+                telemetry.update();
+                while(colorValue != ColorDetect.Value.ONE && opModeIsActive()) {
+                    robot.left.setPower(0.2);
+                    robot.right.setPower(-0.2);
+                    sleep(1000);
+                    pipeline.findBarcode();
+                    colorValue = pipeline.getBarcode();
+                }
+            }
+            robot.left.setPower(0);
+            robot.right.setPower(0);
+            telemetry.addLine("position reached");
+            telemetry.update();
         }
     }
 }

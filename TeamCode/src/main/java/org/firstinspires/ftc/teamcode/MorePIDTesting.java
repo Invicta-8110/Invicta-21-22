@@ -65,8 +65,8 @@ public class MorePIDTesting extends LinearOpMode {
       while (opModeIsActive()) {
 
 
-            PIDDrive(18.5, 1);
-            sleep(500);
+            PIDDrive(18.5, 5);
+            sleep(1000);
             break;
             /*PIDTurn(-37.5, 5);
             sleep(1000);
@@ -118,23 +118,6 @@ public class MorePIDTesting extends LinearOpMode {
 
          while ((Math.abs(error[0]) > tolerance) && opModeIsActive()) { // TODO: replace error[0] with avgError
 
-            // telemetry.addData("Path1",  "Running to %7d :%7d", newWheelTarget[0], newWheelTarget[1]);
-            //telemetry.addData("Path2", "Running at %7d :%7d", wheels[0].getCurrentPosition(), wheels[1].getCurrentPosition());
-
-            //telemetry.addData("DistanceCM: ", (int) (distanceCM * COUNTS_PER_CM));
-
-            // telemetry.addData("power: ", power[0]);
-
-            //telemetry.addData("Proportion:", p[0]);
-            //telemetry.addData("Derivative:", kd * ((error[0] - previousError[0]) / dtS));
-            //telemetry.addData("Integral:", ki * area[0]);
-
-            //telemetry.addData("de(t)/dt", ((error[0] - previousError[0]) / dtS));
-
-
-            //runtime.reset(); //reset timer
-            //sleep((long) 5000);
-
             error[0] = (int) (distanceCM * COUNTS_PER_CM) - wheels[0].getCurrentPosition();
             //error[1] = (int) (distanceCM * COUNTS_PER_CM) - wheels[1].getCurrentPosition();
 
@@ -172,12 +155,6 @@ public class MorePIDTesting extends LinearOpMode {
             telemetry.addData("currentposition right: ", robot.right.getCurrentPosition());
             telemetry.addData("error:", error[0]);
             telemetry.addData("previous error:", previousError[0]);
-
-
-            //telemetry.addData("∫e(t)dt:", area[0]);
-            //telemetry.addData("previous ∫e(t)dt:", previousArea[0]);
-
-            //telemetry.addData("dtS", dtS);
 
             telemetry.update();
 

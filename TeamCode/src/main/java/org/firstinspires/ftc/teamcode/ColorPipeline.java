@@ -146,4 +146,6 @@ public class ColorPipeline extends OpenCvPipeline {
         return avg2;
     }
 
+
+
 }
