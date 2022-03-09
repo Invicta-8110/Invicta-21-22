@@ -84,7 +84,7 @@ public class FreightFrenzyAuton extends LinearOpMode {
         });
 
         //int clawPosition = 10;
-        claw.setPosition(0.85); //when pressed init, claw closes around preload
+//        claw.setPosition(0.85); //when pressed init, claw closes around preload
         //robot.levelOne.setPosition(0.5); //start servo ready for level one hub
 
         waitForStart();
@@ -94,7 +94,6 @@ public class FreightFrenzyAuton extends LinearOpMode {
             barcodeWithElement = pipeline.getBarcode();
 
         }
-
     }
 
     public void PIDDrive(double distanceCM, double tolerance) { // TODO: Adjust Tolerance
