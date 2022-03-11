@@ -7,6 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -22,6 +26,12 @@ public class RegionalsAuton extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV = 537.6;
     static final double DRIVE_GEAR_REDUCTION = 1.0;
     static final double WHEEL_DIAMETER_CM = 11.5;
+//
+
+
+    Orientation lastAngles = new Orientation();
+    public double globalAngle;
+
 
     // Finds the amount of encoder ticks per CM
     //static final double COUNTS_PER_CM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_CM * 3.1415);
@@ -130,6 +140,14 @@ public class RegionalsAuton extends LinearOpMode {
 
         }
 
+    }
+
+
+    public double calculateTotalAngle(){
+        Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        globalAngle = angles.firstAngle - robot.straight.firstAngle;
+
+        return -globalAngle;
     }
 
     public void PIDDrive(double distanceCM, double tolerance) { // TODO: Adjust Tolerance
@@ -254,6 +272,75 @@ public class RegionalsAuton extends LinearOpMode {
         }
     }
 
+    public void IMU_Turn_PID_Total(double degree, double tolerance) {
+
+        double totalDistance = degree - calculateTotalAngle();
+
+        double kp = 1;
+        double kd = 0.0009;
+        double ki = 0.00075;
+
+        double power = 0;
+
+        double P = 0;
+
+        double previousError = 0;
+        double error = tolerance + 1;
+
+        double area = 0;
+        double previousArea = 0;
+
+        double dt = 20;
+        double dts = dt/1000;
+
+        while (opModeIsActive() && (Math.abs(error) > tolerance)) {
+
+            telemetry.addData("Target Angle: ", degree);
+            telemetry.addData("Current Angle: ", calculateTotalAngle());
+
+            telemetry.addData("Total Distance", totalDistance);
+
+            telemetry.addData("Power", power);
+
+            telemetry.addData("de(t)/dt: ", (error - previousError)/dts);
+
+            telemetry.addData("Proportion: ", P);
+
+            telemetry.addData("Error: ", error);
+
+            telemetry.addData("Derivative: ", kd * ((error - previousError)/dts));
+            telemetry.addData("Integral: ", ki * area);
+
+
+            telemetry.addData("Previous Error: ", previousError);
+
+            telemetry.addData("Area: ", area);
+            telemetry.addData("Previous Area: ", previousArea);
+
+            telemetry.addData("dtS", dts);
+
+            telemetry.update();
+
+            previousError = error;
+            error = degree - calculateTotalAngle();
+
+            previousArea = area;
+            area = (error * dts) + previousArea;
+
+            P = Math.abs(error)/totalDistance;
+
+            power = kp * P + kd * ((error - previousError)/dts) + ki * area;
+
+            wheels[0].setPower(-power);
+            wheels[1].setPower(power);
+
+            sleep((long) dt);
+        }
+
+        for (int i = 0; i < 4; i++){
+            wheels[i].setPower(0);
+        }
+    }
 
     //TODO: Figure out what this is
     public void PIDTurn(double distanceCM, double tolerance) {
