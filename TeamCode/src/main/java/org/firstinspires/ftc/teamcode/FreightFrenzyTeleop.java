@@ -39,8 +39,10 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        claw.setPosition(0.35);
+
+        //claw.setPosition(0.35);
 
         waitForStart();
 
@@ -54,6 +56,8 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            extender.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
             //left joystick for driving
 
@@ -67,18 +71,18 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             double rightPower = scaleInput(drive - turn);
             //double armPower = scaleArm(lift);
 
-            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
-                left.setPower(0);
-                right.setPower(0);
-            } else {
-                left.setPower(leftPower);
-                right.setPower(rightPower);
-            }
+//            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
+//                left.setPower(0);
+//                right.setPower(0);
+//            } else {
+//                left.setPower(leftPower);
+//                right.setPower(rightPower);
+//            }
 
             if (gamepad1.right_trigger != 0) { //right open
                 //clawPosition = 10;
                 //claw.setPosition(0.35);
-                claw.setPosition(0.5);
+                claw.setPosition(0.35);
                 //claw.setPosition(1);
 
             }
@@ -128,18 +132,34 @@ public class FreightFrenzyTeleop extends LinearOpMode {
                 arm.setPower(0.1);
             }
 
+            if(gamepad1.right_stick_y > 0) {
+                extender.setPower(0.4);
+            }
+            else if(gamepad1.right_stick_y < 0) {
+                extender.setPower(-0.4);
+            }
+            else if(gamepad1.right_stick_button) {
+                extender.setPower(0);
+            }
+
             if (gamepad1.y) {   //closes
-               // robot.levelOne.setPosition(0.5);
-               //extender.setPower(-0.4);
-                clawAngle.setPosition(0.5);
+                clawAngle.setPosition(0.65); //first level
+                //extender.setPower(-0.2);
             }
             if (gamepad1.x) {   //extends
-                //robot.levelOne.setPosition(0.24);
-               //extender.setPower(0.4);
-                clawAngle.setPosition(0);
-            }
-            if (gamepad1.left_stick_button) {
+                clawAngle.setPosition(0.45); //second level
+                //clawAngle.setPosition(0.38); //third level
+                //extender.setPower(0.2);
+                //extender.setTargetPosition(944);
+
+                /*
+                while(extender.getCurrentPosition() != extender.getTargetPosition()) {
+                    extender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    extender.setPower(0.2);
+                }
                 extender.setPower(0);
+                */
+
             }
 
             //telemetry.addData("Arm position: ", arm.getCurrentPosition());
@@ -151,7 +171,10 @@ public class FreightFrenzyTeleop extends LinearOpMode {
        */
             telemetry.addData("Right Power", "right (%.2f)", right.getPower());
             telemetry.addData("Left Power", "left (%.2f)", left.getPower());
-            //telemetry.addData("clawAngle: ", robot.clawAngle.getPosition());
+            //telemetry.addData("claw direction: ", clawAngle.getDirection());
+            telemetry.addData("clawAngle: ", robot.clawAngle.getPosition());
+            //telemetry.addData("clawPosition", claw.getPosition());
+            telemetry.addData("extenderPosition", extender.getCurrentPosition());
             telemetry.update();
         }
     }

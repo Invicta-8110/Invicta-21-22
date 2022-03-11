@@ -14,10 +14,15 @@ public class ColorPipeline extends OpenCvPipeline {
     //private Point SIDE_TOP_RIGHT = new Point(114.56,249.6);
 
 
-    private static final Point REGION1_BOTTOM_LEFT = new Point(35.56 - 11.85,210.73 + 23.41);
-    private static final Point REGION1_TOP_RIGHT = new Point(106.67 - 11.85,257.56 + 35.12 - 17.56);
-    private static final Point REGION2_BOTTOM_LEFT = new Point(248.89, 210.73 + 23.41);
-    private static final Point REGION2_TOP_RIGHT = new Point(296.29,257.56 + 35.12 - 17.56);
+//    private static final Point REGION1_BOTTOM_LEFT = new Point(35.56 - 11.85,210.73 + 23.41);
+//    private static final Point REGION1_TOP_RIGHT = new Point(106.67 - 11.85,257.56 + 35.12 - 17.56);
+//    private static final Point REGION2_BOTTOM_LEFT = new Point(248.89, 210.73 + 23.41);
+//    private static final Point REGION2_TOP_RIGHT = new Point(296.29,257.56 + 35.12 - 17.56);
+
+    private static final Point REGION2_BOTTOM_LEFT = new Point(142.22 - 23.7 , 480 - 132 - 36);
+    private static final Point REGION2_TOP_RIGHT = new Point(260.74 - 23.7,480 - 168 - 36);
+    private static final Point REGION1_BOTTOM_LEFT = new Point(474.07 - 23.7  - 82.96, 480 - 132 - 36);
+    private static final Point REGION1_TOP_RIGHT = new Point(533.33 - 23.7  - 82.96,480 - 168 - 36);
 
 
     /*private static final Point REGION1_BOTTOM_LEFT = new Point(0,378.24);
