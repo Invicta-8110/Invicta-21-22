@@ -14,8 +14,8 @@ public class FreightFrenzyTeleop extends LinearOpMode {
     ElapsedTime timer = new ElapsedTime();
 
     FreightFrenzyHardware robot = new FreightFrenzyHardware();
-    private static final int POSITIVE_LIMIT = 1000;
-    private static final int NEGATIVE_LIMIT = -1000;
+//    private static final int POSITIVE_LIMIT = 1000;
+//    private static final int NEGATIVE_LIMIT = -1000;
 
     @Override
     public void runOpMode() {
@@ -57,27 +57,21 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            //telemetry.addData("servo position", claw.getPosition());
-            //telemetry.update();
-
             left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             extender.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
             //left joystick for driving
-
             double drive = gamepad1.left_stick_y;//cl
             double turn = -gamepad1.left_stick_x;//cl
-            double lift = -gamepad1.right_stick_y;
-
-            double speed = scaleInput(drive);
+//            double lift = -gamepad1.right_stick_y;
+//            double speed = scaleInput(drive);
 
             double leftPower = scaleInput(drive + turn);
             double rightPower = scaleInput(drive - turn);
 
-            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
+            if (gamepad1.left_stick_button) { //emergency stop if joystick drifts
                 left.setPower(0);
                 right.setPower(0);
             } else {
@@ -175,18 +169,14 @@ public class FreightFrenzyTeleop extends LinearOpMode {
      */
     private double scaleInput(double dval){
 
-        //
-        //double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
-                //0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, .7};
-
+        //double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, .7};
         double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
                 0.15, 0.2, 0.25, 0.4, 0.45, 0.5, 0.65, 0.7, 0.75, 0.8, .9};
 
         //get the corresponding index for the scaleInput array
         int index = (int) (dval * 16.0);
 
-        //index should be positive
-        index = Math.abs(index);
+        index = Math.abs(index); //index should be positive
 
         if (index > 16) {
             index = 16;
@@ -199,59 +189,58 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         } else{
             dScale = scaleArray[index];
         }
-
         //return scaled value
         return dScale;
     }
 
     //scales the input from the joystick controlling the lifting/lowerin
     //of the arm, slower adjusted speeds than driving controls
-    private double scaleArm(double joystick) {
-
-        double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
-                0.15, 0.2, 0.25, 0.3, 0.35};
-
-        //get the corresponding index for the scaleInput array
-        int index = (int) (joystick * 10.0);
-
-        //index should be positive
-        index = Math.abs(index);
-
-        if (index > 10) {
-            index = 10;
-        }
-
-        //get value from the array
-        double dScale;
-        if(joystick < 0){
-            dScale = -scaleArray[index];
-        } else{
-            dScale = scaleArray[index];
-        }
-
-        //return scaled value
-        return dScale;
-
-    }
-
-    public void liftArm(int level) {
-
-        if (level == 3) {
-            while (robot.arm.getCurrentPosition() < 76 && opModeIsActive()) {
-                robot.arm.setPower(0.2);
-                //robot.arm.setPower(0.1); //equilibrium power
-            }
-            robot.arm.setPower(0.05);
-        }
-
-        else if (level == 2) {
-            robot.arm.setPower(0.15);
-            robot.arm.setPower(0.1);
-            robot.arm.setPower(0.05);
-
-            //equilibrium power
-        }
-
-    }
+//    private double scaleArm(double joystick) {
+//
+//        double[] scaleArray = {0.0, 0.001, 0.005, 0.01, 0.05, 0.1,
+//                0.15, 0.2, 0.25, 0.3, 0.35};
+//
+//        //get the corresponding index for the scaleInput array
+//        int index = (int) (joystick * 10.0);
+//
+//        //index should be positive
+//        index = Math.abs(index);
+//
+//        if (index > 10) {
+//            index = 10;
+//        }
+//
+//        //get value from the array
+//        double dScale;
+//        if(joystick < 0){
+//            dScale = -scaleArray[index];
+//        } else{
+//            dScale = scaleArray[index];
+//        }
+//
+//        //return scaled value
+//        return dScale;
+//
+//    }
+//
+//    public void liftArm(int level) {
+//
+//        if (level == 3) {
+//            while (robot.arm.getCurrentPosition() < 76 && opModeIsActive()) {
+//                robot.arm.setPower(0.2);
+//                //robot.arm.setPower(0.1); //equilibrium power
+//            }
+//            robot.arm.setPower(0.05);
+//        }
+//
+//        else if (level == 2) {
+//            robot.arm.setPower(0.15);
+//            robot.arm.setPower(0.1);
+//            robot.arm.setPower(0.05);
+//
+//            //equilibrium power
+//        }
+//
+//    }
 
 }

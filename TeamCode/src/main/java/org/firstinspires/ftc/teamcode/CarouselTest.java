@@ -30,16 +30,7 @@ public class CarouselTest extends LinearOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) {
 
-            robot.claw.setPosition(0.3);
-            sleep(1000);
-            robot.claw.setPosition(0.8);
-            sleep(1000);
-            robot.claw.setPosition(0.3);
-            break;
-
-        }
 
     }
 

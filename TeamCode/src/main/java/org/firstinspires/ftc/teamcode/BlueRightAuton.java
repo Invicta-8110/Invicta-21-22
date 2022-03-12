@@ -68,7 +68,8 @@ public class BlueRightAuton extends LinearOpMode {
 
         telemetry.update();
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId",
+                "id", hardwareMap.appContext.getPackageName());
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcam, cameraMonitorViewId);
 
@@ -122,6 +123,7 @@ public class BlueRightAuton extends LinearOpMode {
         robot.carousel.setPower(0);
 
         IMU_Turn_PID_Total(-90,1);
+
         robot.clawAngle.setPosition(0.65);
         sleep(1000);
         robot.arm.setPower(0.2);
