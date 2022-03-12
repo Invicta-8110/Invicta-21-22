@@ -42,9 +42,16 @@ public class FreightFrenzyTeleop extends LinearOpMode {
         extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
-        //claw.setPosition(0.35);
+        claw.setPosition(0.65);
 
         waitForStart();
+
+        extender.setTargetPosition(944);
+        while(extender.getCurrentPosition() != extender.getTargetPosition()) {
+            extender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            extender.setPower(0.2);
+        }
+        extender.setPower(0);
 
         //int clawPosition = 0;
 
@@ -70,13 +77,13 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             double leftPower = scaleInput(drive + turn);
             double rightPower = scaleInput(drive - turn);
 
-//            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
-//                left.setPower(0);
-//                right.setPower(0);
-//            } else {
-//                left.setPower(leftPower);
-//                right.setPower(rightPower);
-//            }
+            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { //emergency stop if joystick drifts
+                left.setPower(0);
+                right.setPower(0);
+            } else {
+                left.setPower(leftPower);
+                right.setPower(rightPower);
+            }
 
             if (gamepad1.right_trigger != 0) { //right open
                 //clawPosition = 10;
@@ -93,8 +100,8 @@ public class FreightFrenzyTeleop extends LinearOpMode {
 
             if (gamepad1.dpad_right || gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_up) {
                 carousel.setPower(1);
-                sleep(1000);
-                carousel.setPower(0);
+                //sleep(1000);
+                //carousel.setPower(0);
                 //carousel.setPower(-0.8);
             }
             /*else if (gamepad1.dpad_left || gamepad1.dpad_up) {
@@ -104,12 +111,12 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             }*/
 
             if (gamepad1.a) {
-                arm.setPower(0);
+                arm.setPower(0.2);
             }
 
             if(gamepad1.b) {
                 //liftArm(3);
-                arm.setPower(0.1);
+                arm.setPower(0);
             }
 
             if(gamepad1.right_stick_y > 0) {
@@ -123,11 +130,13 @@ public class FreightFrenzyTeleop extends LinearOpMode {
             }
 
             if (gamepad1.y) {   //closes
-                clawAngle.setPosition(0.65); //first level
+                clawAngle.setPosition(0.65);
+                //clawAngle.setPosition(0.65); //first level
                 //extender.setPower(-0.2);
             }
             if (gamepad1.x) {   //extends
-                clawAngle.setPosition(0.45); //second level
+                clawAngle.setPosition(0.38);
+                //clawAngle.setPosition(0.45); //second level
                 //clawAngle.setPosition(0.38); //third level
                 //extender.setPower(0.2);
                 //extender.setTargetPosition(944);

@@ -67,20 +67,16 @@ class FreightFrenzyHardware {
         //claw.setDirection(CRServo.Direction.FORWARD);
         clawAngle.setDirection(Servo.Direction.REVERSE);
 
-
-
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
         right.setPower(0);
         left.setPower(0);
         arm.setPower(0);
         carousel.setPower(0);
         extender.setPower(0);
-
         //claw.setPosition(0);
 
     }

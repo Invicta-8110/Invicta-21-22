@@ -16,8 +16,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name="RegionalAuton",group="Freight Frenzy")
-public class RegionalsAuton extends LinearOpMode {
+@Autonomous(name="RedRightAuton",group="Freight Frenzy")
+public class RedRightAuton extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime clawTime = new ElapsedTime();
@@ -95,13 +95,25 @@ public class RegionalsAuton extends LinearOpMode {
         waitForStart();
 
         barcodeWithElement = pipeline.getBarcode();
+
+        PIDDrive(25,1);
+        IMU_Turn_PID_Total(-90,1);
+        PIDDrive(65,1);
+        IMU_Turn_PID_Total(0,1);
+
         placePreload(barcodeWithElement);
+
+        PIDDrive(32,1);
+        claw.setPosition(0.35);
+        sleep(1000);
+        claw.setPosition(0);
+        sleep(1000);
 
 //        PIDDrive(20,1);
 //        sleep(1000);
 
-   //     IMU_Turn_PID_Total(90,1);
-   //     sleep(1000);
+//        IMU_Turn_PID_Total(90,1);
+//        sleep(1000);
 
         //PIDDrive(50,1);
 
@@ -260,8 +272,10 @@ public class RegionalsAuton extends LinearOpMode {
         double totalDistance = degree - calculateTotalAngle();
 
         double kp = 1;
-        double kd = 0.0009;
-        double ki = 0.00075;
+        //double kd = 0.0009;
+        //double ki = 0.00075;
+        double kd = 0.00021;
+        double ki = 0.00001;
 
         double power = 0;
 
@@ -320,7 +334,7 @@ public class RegionalsAuton extends LinearOpMode {
             sleep((long) dt);
         }
 
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i < 2; i++){
             wheels[i].setPower(0);
         }
     }
